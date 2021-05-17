@@ -1,0 +1,25 @@
+101 ICON "main.ico"
+
+1 VERSIONINFO
+FILEVERSION     0,1,0,0
+PRODUCTVERSION  0,1,0,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "CompanyName", "RangeCode"
+      VALUE "FileDescription", "A game developed by RangeCode in 2020"
+      VALUE "FileVersion", "0.1"
+      VALUE "InternalName", "gl_game"
+      VALUE "LegalCopyright", "RangeCode (c) 2020"
+      VALUE "OriginalFilename", "glGame.exe"
+      VALUE "ProductName", "GL Game"
+      VALUE "ProductVersion", "0.1"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1252
+  END
+END
