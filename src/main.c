@@ -123,20 +123,6 @@ int main(int argc, char *argv[]) {
         glm_mul(transformMatrix, mvpMatrix, transformMatrix);
         // assign transform uniform
         glUniformMatrix4fv(uniforms[0], 1, GL_FALSE, &transformMatrix[0][0]);
-/*
-    glm::mat4 posMat = glm::translate(pos);
-    glm::mat4 scaleMat = glm::scale(scale);
-    glm::mat4 rotX = glm::rotate(rot.x, glm::vec3(1.0, 0.0, 0.0));
-    glm::mat4 rotY = glm::rotate(rot.y, glm::vec3(0.0, 1.0, 0.0));
-    glm::mat4 rotZ = glm::rotate(rot.z, glm::vec3(0.0, 0.0, 1.0));
-    glm::mat4 rotMat = rotX * rotY * rotZ;
-/*
-glm_translate(m, pivot);
-glm_rotate(m, angle, axis);
-glm_translate(m, pivotInv); /* pivotInv = -pivot
-*/
-
-
 
         glDrawArrays(GL_TRIANGLES, 0, 12);
         SDL_GL_SwapWindow(mainWindow);
