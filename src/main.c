@@ -20,6 +20,8 @@ int main(int argc, char *argv[]) {
 
     glViewport(0, 0, windowWidth, windowHeight);
     
+    // define structure for 2D texture
+
     float size = 0.5f;
     float vertices[] = {
         -size, -size, -size,
