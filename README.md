@@ -1,6 +1,8 @@
-# gl-minimal
+# gridMerge
 
-Minimal modern OpenGL project in C, using mingw64/MSYS2 toolchains, SDL2, debug and standalone release makefiles, and VS Code configuration
+GridMerge will be a light tool for visualy analising and merging data, in a more straightforward and user frindly way than Spreadsheet software like Excel usually offers.
+
+Project in C. Using mingw64/MSYS2 toolchains, SDL2. Has debug and standalone release makefiles, and VS Code configuration
 
 How to build:
 ```
