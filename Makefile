@@ -22,7 +22,7 @@
 ### Project Variables:
 APPNAME = gridMerge
 INCLUDES = -I/mingw64/include/SDL2
-LIBS = `sdl2-config --cflags --static-libs` -lglew32 -lopengl32
+LIBS = `sdl2-config --cflags --static-libs`
 OBJ_ARCH = -O pe-x86-64 -B i386:x86-64
 
 CC = gcc
@@ -42,7 +42,7 @@ endif
 # static and console flags
 ifeq ($(static),y)
 	CX_START =
-	CX_END = -DGLEW_STATIC 
+	CX_END = 
 	LD_START = -Wl,--gc-sections -Wl,-Bstatic 
 	LD_END = -Wl,-Bdynamic 
 endif
