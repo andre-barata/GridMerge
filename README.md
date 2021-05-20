@@ -1,4 +1,4 @@
-# gridMerge
+# GridMerge
 
 GridMerge will be a light tool for visualy analising and merging data, in a more straightforward and user frindly way than Spreadsheet software like Excel usually offers.
 

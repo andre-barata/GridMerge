@@ -9,12 +9,12 @@ BEGIN
     BLOCK "040904E4"
     BEGIN
       VALUE "CompanyName", "RangeCode"
-      VALUE "FileDescription", "A game developed by RangeCode in 2020"
+      VALUE "FileDescription", "A light tool for visualy analising and merging data."
       VALUE "FileVersion", "0.1"
-      VALUE "InternalName", "gl_game"
-      VALUE "LegalCopyright", "RangeCode (c) 2020"
-      VALUE "OriginalFilename", "glGame.exe"
-      VALUE "ProductName", "GL Game"
+      VALUE "InternalName", "RangeCode"
+      VALUE "LegalCopyright", "RangeCode (c) 2021"
+      VALUE "OriginalFilename", "GridRender.exe"
+      VALUE "ProductName", "GridRender"
       VALUE "ProductVersion", "0.1"
     END
   END

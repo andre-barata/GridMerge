@@ -20,7 +20,7 @@
 # |- *.exe            -- ouput executable goes here
 
 ### Project Variables:
-APPNAME = gridMerge
+APPNAME = GridMerge
 INCLUDES = -I/mingw64/include/SDL2
 LIBS = `sdl2-config --cflags --static-libs`
 OBJ_ARCH = -O pe-x86-64 -B i386:x86-64
