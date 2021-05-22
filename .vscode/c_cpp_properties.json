@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${config:msys.path}/mingw64/include",
-                "${config:msys.path}/mingw64/include/SDL2"
+                "${config:msys.path}/mingw64/include/SDL2",
+                "${config:msys.path}/mingw64/include/freetype2"
             ],
             "defines": [
                 "_DEBUG",
