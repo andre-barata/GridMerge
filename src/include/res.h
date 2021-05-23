@@ -21,9 +21,11 @@ struct resStruct {
 
 // THE list of resource files
 RESFILE(test,txt)
+RESFILE(roboto_thin,ttf)
 //...
 void resInit(void) {
     RESINIT(test,txt)
+    RESINIT(roboto_thin,ttf)
 //  ...
 }
 

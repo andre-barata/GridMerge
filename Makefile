@@ -21,11 +21,12 @@
 
 ### Project Variables:
 APPNAME = GridMerge
-INCLUDES = -I/mingw64/include/SDL2 `freetype-config --cflags`
+INCLUDES = -I/mingw64/include/SDL2 
 LIBS = -LD:/Dev/msys64/mingw64/lib -lSDL2_ttf -lfreetype -lz -lbz2 -lpng16 -lz -lharfbuzz -lm -lusp10 -lgdi32 -lrpcrt4 -ldwrite \
 	-lglib-2.0 -lintl -lws2_32 -lole32 -lwinmm -lshlwapi -pthread -lm -lpcre -lbrotlidec-static \
 	-lbrotlicommon-static -lgraphite2 -lfreetype -lstdc++ \
 	`sdl2-config --cflags --static-libs` \
+	-lSDL2_image -ljpeg -ltiff -lwebp -ljbig -llzma -lzstd -ldeflate \
 	-Wl,--whole-archive -lwinpthread -Wl,--no-whole-archive
 OBJ_ARCH = -O pe-x86-64 -B i386:x86-64
 
@@ -38,7 +39,7 @@ MAKEFLAGS += --no-builtin-variables
 ifeq ($(MAKECMDGOALS),release)
 	static=y
 endif
-# console application mode defaults to true in debug modepac
+# console application mode defaults to true in debug mode
 ifeq ($(MAKECMDGOALS),debug)
 	console=y
 endif
