@@ -3,11 +3,16 @@
 
 #include <stdbool.h>
 #include <SDL.h>
+#include "res.h"
 
 SDL_Window* mainWindow;
-SDL_Renderer* windowrenderer;
-TTF_Font* font;
-SDL_Texture *bufferTexture, *text;
+SDL_Renderer* windowRenderer;
+TTF_Font* mainFont;
+SDL_Texture *bufferTexture;
+
+SDL_Color black = { 0, 0, 0 };
+SDL_Color white = { 255, 255, 255 };
+
 
 bool initWindow(int* width, int* height) {
     if( SDL_Init( SDL_INIT_VIDEO ) != 0 ) {
@@ -20,12 +25,13 @@ bool initWindow(int* width, int* height) {
         return false;
     }
 
-    windowrenderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED);
-    if(windowrenderer == NULL) {
+    // attempt to create a GPU renderer (DirectX, OpenGL, OpenGL ES...), if unsuccessfull create a software renderer
+    windowRenderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED);
+    if(windowRenderer == NULL) {
         SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to create hardware renderer. Fallback to SOFTWARE rendering... %s\n", SDL_GetError() );
         
-        windowrenderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_SOFTWARE);
-        if(windowrenderer == NULL) {
+        windowRenderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_SOFTWARE);
+        if(windowRenderer == NULL) {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Failed to create software renderer. %s\n", SDL_GetError() );
             return false;
         }
@@ -47,14 +53,14 @@ bool initWindow(int* width, int* height) {
 
     SDL_GetWindowSize(mainWindow, width, height);
 
+    // create a buffer bitmap and a GPU texture from it
     SDL_Surface* buffer = SDL_CreateRGBSurfaceWithFormat(0, *width, *height, 32, SDL_PIXELFORMAT_RGBA32);
     if (buffer == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture surface: %s\n", SDL_GetError());
         return false;
     }
-	bufferTexture = SDL_CreateTextureFromSurface(windowrenderer, buffer);
+	bufferTexture = SDL_CreateTextureFromSurface(windowRenderer, buffer);
 	SDL_FreeSurface(buffer);
-	buffer = NULL;
 	if ( bufferTexture == NULL ) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture: %s\n", SDL_GetError());
 		return false;
@@ -64,14 +70,29 @@ bool initWindow(int* width, int* height) {
     return true;
 }
 
+bool initFont() {
+    if(TTF_Init() < 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not init SDL_TTF: %s\n", SDL_GetError() );
+		return false;
+    }
+    // load the main TTF font from embeded resources
+	if (!(mainFont = TTF_OpenFontRW(SDL_RWFromMem((void*)(rc_roboto_thin.start), rc_roboto_thin.size), 1, 14))) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error loading font: %s\n", SDL_GetError() );
+		return false;
+	}
+    TTF_SetFontHinting(mainFont, TTF_HINTING_LIGHT_SUBPIXEL);
+
+    return true;
+}
+
 int terminate() {
     SDL_StopTextInput();
 
-	TTF_CloseFont(font);
+	TTF_CloseFont(mainFont);
 	SDL_DestroyTexture(bufferTexture);
 	bufferTexture = NULL;
 
-    SDL_DestroyRenderer(windowrenderer);
+    SDL_DestroyRenderer(windowRenderer);
     SDL_DestroyWindow(mainWindow);
     SDL_Quit();
     return 1;
