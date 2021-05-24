@@ -20,6 +20,17 @@ bool initWindow(int* width, int* height) {
         return false;
     }
 
+    windowrenderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED);
+    if(windowrenderer == NULL) {
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to create hardware renderer. Fallback to SOFTWARE rendering... %s\n", SDL_GetError() );
+        
+        windowrenderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_SOFTWARE);
+        if(windowrenderer == NULL) {
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Failed to create software renderer. %s\n", SDL_GetError() );
+            return false;
+        }
+    }
+
     // attempt to maximize
     int display_index = SDL_GetWindowDisplayIndex(mainWindow);
     if (display_index < 0) {
@@ -36,25 +47,20 @@ bool initWindow(int* width, int* height) {
 
     SDL_GetWindowSize(mainWindow, width, height);
 
-    windowrenderer = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED /*| SDL_RENDERER_PRESENTVSYNC*/);
-    if(windowrenderer == NULL) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Failed to get window's surface. %s\n", SDL_GetError() );
-        return false;
-    }
-
     SDL_Surface* buffer = SDL_CreateRGBSurfaceWithFormat(0, *width, *height, 32, SDL_PIXELFORMAT_RGBA32);
     if (buffer == NULL) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture surface: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture surface: %s\n", SDL_GetError());
         return false;
     }
 	bufferTexture = SDL_CreateTextureFromSurface(windowrenderer, buffer);
 	SDL_FreeSurface(buffer);
 	buffer = NULL;
 	if ( bufferTexture == NULL ) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture: %s\n", SDL_GetError());
 		return false;
 	}
 
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Continuing from window init... \n" );
     return true;
 }
 

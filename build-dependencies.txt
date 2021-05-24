@@ -1,1 +1,1 @@
-pacman --noconfirm -S mingw-w64-x86_64-toolchain make mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_ttf
+pacman --noconfirm -S mingw-w64-x86_64-toolchain make mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-libutf8proc
