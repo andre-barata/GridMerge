@@ -28,9 +28,10 @@ bool drawText(SDL_Renderer* renderer, const char* text, int x, int y, int maxW, 
     SDL_Surface* textSurface = TTF_RenderUTF8_Shaded(mainFont, text, black, white);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
 
-    SDL_Rect dest = {x, y, textSurface->w > maxW ? maxW : textSurface->w, 
-                           textSurface->h > maxH ? maxH : textSurface->h};
-    SDL_RenderCopy(renderer, textTexture, NULL, &dest);
+    int w = textSurface->w > maxW ? maxW : textSurface->w;
+    int h = textSurface->h > maxH ? maxH : textSurface->h;
+
+    SDL_RenderCopy(renderer, textTexture, &(SDL_Rect){0,0,w,h}, &(SDL_Rect){x, y, w, h});
 
     SDL_DestroyTexture(textTexture);
     SDL_FreeSurface(textSurface);

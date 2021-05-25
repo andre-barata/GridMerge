@@ -1,5 +1,14 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
 #include <SDL.h>
 
-const SDL_Color black = { 0, 0, 0 };
-const SDL_Color white = { 255, 255, 255 };
+SDL_Color black     = { 0x00, 0x00, 0x00 };
+SDL_Color gray1     = { 0x1e, 0x1e, 0x1e };
+SDL_Color gray2     = { 0x25, 0x25, 0x26 };
+SDL_Color gray3     = { 0x2d, 0x2d, 0x2d };
+SDL_Color gray4     = { 0x3c, 0x3c, 0x3c };
+SDL_Color white     = { 0xff, 0xff, 0xff };
+
+#endif
 

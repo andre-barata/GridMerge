@@ -7,6 +7,7 @@
 #include "include/res.h"
 #include "include/common.h"
 #include "include/font.h"
+#include "include/viewModel.h"
 
 int main(int argc, char *argv[]) {
     int windowWidth, windowHeight, prevLen = 0;
@@ -30,12 +31,14 @@ int main(int argc, char *argv[]) {
 	// Start sending SDL_TextInput events
 	SDL_StartTextInput();
 
+    SDL_SetRenderDrawColor(windowRenderer, 80, 80, 80, 255);
+    SDL_RenderClear(windowRenderer);
+    SDL_RenderCopy(windowRenderer, bufferTexture, NULL, NULL);
+
     bool quit = false;
     while(!quit) {
         SDL_Event e;
-        
-        SDL_SetRenderDrawColor(windowRenderer, 80, 80, 80, 255);
-        SDL_RenderClear(windowRenderer);
+        SDL_Delay(10);
         
         while (SDL_PollEvent(&e) != 0) {
             switch (e.type) {
@@ -46,14 +49,13 @@ int main(int argc, char *argv[]) {
                     sprintf(inputText, "%s%s", inputText, e.text.text);
                     break;
                 case SDL_KEYDOWN:
-                    if (e.key.keysym.sym == SDLK_BACKSPACE && strlen(inputText) > 0) {
+                    if (e.key.keysym.sym == SDLK_ESCAPE) quit = true;
+                    else if (e.key.keysym.sym == SDLK_BACKSPACE && strlen(inputText) > 0) {
                         inputText[prevLen] = 0;
                     }
                     break;
             }
         }
-
-	    SDL_RenderCopy(windowRenderer, bufferTexture, NULL, NULL);
 
         if (strlen(inputText)) 
             drawText(windowRenderer, inputText, 10, 10, 100, 40);

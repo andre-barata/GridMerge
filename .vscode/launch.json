@@ -5,7 +5,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/glGame.exe",
+            "program": "${workspaceFolder}/GridMerge.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
