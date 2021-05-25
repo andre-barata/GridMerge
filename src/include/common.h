@@ -3,16 +3,11 @@
 
 #include <stdbool.h>
 #include <SDL.h>
-#include "res.h"
+#include "font.h"
 
 SDL_Window* mainWindow;
 SDL_Renderer* windowRenderer;
-TTF_Font* mainFont;
 SDL_Texture *bufferTexture;
-
-SDL_Color black = { 0, 0, 0 };
-SDL_Color white = { 255, 255, 255 };
-
 
 bool initWindow(int* width, int* height) {
     if( SDL_Init( SDL_INIT_VIDEO ) != 0 ) {
@@ -67,21 +62,6 @@ bool initWindow(int* width, int* height) {
 	}
 
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Continuing from window init... \n" );
-    return true;
-}
-
-bool initFont() {
-    if(TTF_Init() < 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not init SDL_TTF: %s\n", SDL_GetError() );
-		return false;
-    }
-    // load the main TTF font from embeded resources
-	if (!(mainFont = TTF_OpenFontRW(SDL_RWFromMem((void*)(rc_roboto_thin.start), rc_roboto_thin.size), 1, 14))) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error loading font: %s\n", SDL_GetError() );
-		return false;
-	}
-    TTF_SetFontHinting(mainFont, TTF_HINTING_LIGHT_SUBPIXEL);
-
     return true;
 }
 

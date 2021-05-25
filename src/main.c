@@ -4,13 +4,13 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "include/SDL_ttf.h"
-#include "include/common.h"
 #include "include/res.h"
+#include "include/common.h"
+#include "include/font.h"
 
 int main(int argc, char *argv[]) {
     int windowWidth, windowHeight, prevLen = 0;
-    char input[1024] = "";
-    SDL_Texture *textTexture;
+    char inputText[1024] = "";
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
     resInit();
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 	SDL_StartTextInput();
 
     bool quit = false;
-    while(!quit){
+    while(!quit) {
         SDL_Event e;
         
         SDL_SetRenderDrawColor(windowRenderer, 80, 80, 80, 255);
@@ -40,14 +40,14 @@ int main(int argc, char *argv[]) {
         while (SDL_PollEvent(&e) != 0) {
             switch (e.type) {
                 case SDL_QUIT:
-                    return false;
+                    quit = true;
                 case SDL_TEXTINPUT:
-                    prevLen = strlen(input);
-                    sprintf(input, "%s%s", input, e.text.text);
+                    prevLen = strlen(inputText);
+                    sprintf(inputText, "%s%s", inputText, e.text.text);
                     break;
                 case SDL_KEYDOWN:
-                    if (e.key.keysym.sym == SDLK_BACKSPACE && strlen(input) > 0) {
-                        input[prevLen] = 0;
+                    if (e.key.keysym.sym == SDLK_BACKSPACE && strlen(inputText) > 0) {
+                        inputText[prevLen] = 0;
                     }
                     break;
             }
@@ -55,16 +55,8 @@ int main(int argc, char *argv[]) {
 
 	    SDL_RenderCopy(windowRenderer, bufferTexture, NULL, NULL);
 
-        if (strlen(input)) {
-            SDL_Surface* textSurface = TTF_RenderUTF8_Shaded(mainFont, (char*)input, black, white);
-            textTexture = SDL_CreateTextureFromSurface(windowRenderer, textSurface);
-
-            SDL_Rect dest = {320-(textSurface->w/2.0f), 240, textSurface->w, textSurface->h};
-            SDL_RenderCopy(windowRenderer, textTexture, NULL, &dest);
-
-            SDL_FreeSurface(textSurface);
-            SDL_DestroyTexture(textTexture);
-        }
+        if (strlen(inputText)) 
+            drawText(windowRenderer, inputText, 10, 10, 100, 40);
 
         SDL_RenderPresent(windowRenderer);
 
