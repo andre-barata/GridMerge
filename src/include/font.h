@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <SDL.h>
 #include "SDL_ttf.h"
+#include "common.h"
 #include "res.h"
-#include "constants.h"
 
 TTF_Font* mainFont;
 

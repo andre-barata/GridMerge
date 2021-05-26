@@ -8,6 +8,7 @@
 #include "include/common.h"
 #include "include/font.h"
 #include "include/viewModel.h"
+#include "include/render.h"
 
 int main(int argc, char *argv[]) {
     int windowWidth, windowHeight, prevLen = 0;
@@ -28,12 +29,10 @@ int main(int argc, char *argv[]) {
 	}
     */
 
+   if (!renderLayout(0, 0, windowWidth, windowHeight)) return terminate();
+
 	// Start sending SDL_TextInput events
 	SDL_StartTextInput();
-
-    SDL_SetRenderDrawColor(windowRenderer, 80, 80, 80, 255);
-    SDL_RenderClear(windowRenderer);
-    SDL_RenderCopy(windowRenderer, bufferTexture, NULL, NULL);
 
     bool quit = false;
     while(!quit) {
