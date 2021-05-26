@@ -29,7 +29,10 @@ int main(int argc, char *argv[]) {
 	}
     */
 
-   if (!renderLayout(0, 0, windowWidth, windowHeight)) return terminate();
+    if (!renderLayout(0, 0, windowWidth, windowHeight)) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error while rendering the main layout! %s\n", SDL_GetError() );
+        return terminate();
+    }
 
 	// Start sending SDL_TextInput events
 	SDL_StartTextInput();

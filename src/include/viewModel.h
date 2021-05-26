@@ -16,7 +16,7 @@ typedef struct LayRect {
 /// Layout definition
 layRect layout = { 
     .stack = vertical,
-    .childCount = 3, .childs = (layRect[]){
+    .childCount = 2, .childs = (layRect[]){
         {
             .w = 100,"%", .h = 29,"px", 
             .bgColor = &gray4,
