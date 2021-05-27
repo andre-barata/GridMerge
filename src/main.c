@@ -34,8 +34,37 @@ int main(int argc, char *argv[]) {
         return terminate();
     }
 
+    // test hashmap
+    typedef struct { 
+        char* key; char* value;
+    } listItem;
+    listItem* list = NULL;
+    shput(list, "key1", "h");
+    shput(list, "key2", "e");
+    shput(list, "key3", "l");
+    shput(list, "key4", "o");
+
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, shget(list, "key2"));
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, shget(list, "key3"));
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, shget(list, "key4"));
+
+
+    // test array
+    typedef struct { 
+        char* aString;
+    } arrItem;
+    arrItem* arr = NULL;
+    arrsetcap(arr, 2);
+    arrput(arr, (arrItem){ "item1" });
+    arrput(arr, (arrItem){ "item2" });
+
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, arr[0].aString);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, arr[1].aString);
+
+    SDL_RenderPresent(windowRenderer);
+
 	// Start sending SDL_TextInput events
-	SDL_StartTextInput();
+    SDL_StartTextInput();
 
     bool quit = false;
     while(!quit) {
@@ -59,11 +88,10 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        if (strlen(inputText)) 
+        if (strlen(inputText)) {
             drawText(windowRenderer, inputText, 10, 10, 100, 40);
-
-        SDL_RenderPresent(windowRenderer);
-
+            SDL_RenderPresent(windowRenderer);
+        }
     }
     return terminate();
 }

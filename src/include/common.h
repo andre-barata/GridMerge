@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include <SDL.h>
+#define STB_DS_IMPLEMENTATION
+#include "stb_ds.h"
 
 SDL_Color black     = { 0x00, 0x00, 0x00 };
 SDL_Color gray1     = { 0x1e, 0x1e, 0x1e };

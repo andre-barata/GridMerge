@@ -1,4 +1,4 @@
-# Generic makefile for building OpenGl executable with optional embedded resource binaries and static/standalone functionality (tested on windows: mingw64/MSYS2)
+# Makefile for building the executable with optional embedded resource binaries and static/standalone functionality (tested on windows: mingw64/MSYS2)
 # License LGPL
 # by Andre Barata 2020
 #
