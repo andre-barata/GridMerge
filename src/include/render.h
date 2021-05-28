@@ -10,8 +10,8 @@
 bool renderLayoutRect(ViewModel* model);
 
 bool renderLayout(int x, int y, int windowWidth, int windowHeight) {
-    if (!loadModel(x, y, windowWidth, windowHeight)) return false;
-    return renderLayoutRect(&viewModel);
+    if (!loadModel(&layout, x, y, windowWidth, windowHeight)) return false;
+    return renderLayoutRect(&layout);
 }
 
 bool renderLayoutRect(ViewModel* model) {

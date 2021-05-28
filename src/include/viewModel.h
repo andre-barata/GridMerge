@@ -4,160 +4,131 @@
 #include <SDL.h>
 #include "common.h"
 
-enum direction { horizontal, vertical };
-typedef struct _Layout {
+enum direction   { horizontal, vertical };
+enum alignement  { left, center, right };
+enum vAlignement { top, middle, bottom };
+typedef struct _ViewModel {
     Uint16 w; char wUnit[3]; // "px" or "%"
     Uint16 h; char hUnit[3];
     SDL_Color* bgColor;
     enum direction stack; 
-    int childCount; struct _Layout *childs;
-} Layout;
+    int initialChildCount; struct _ViewModel *initialChilds;
+    struct _ViewModel *childs;
+    char* id;
+    bool resizable;
+    char* innerText;
+    //SDL_Image image;
+    enum alignement align;
+    enum vAlignement vAlign;
+    Uint16 paddingLeft, paddingTop;
+    Uint16 x, y, sumAbsH, sumAbsW, sumRelH, sumRelW;
+} ViewModel;
 
-Layout layout = { 
+ViewModel layout = { 
     .stack = vertical,
-    .childCount = 5, .childs = (Layout[]){
+    .initialChildCount = 3, .initialChilds = (ViewModel[]){
         {
             .w = 100,"%", .h = 29,"px", 
-            .bgColor = &gray4,
+            .bgColor = &gray4
         }, 
         {
             .stack = horizontal,
-            .childCount = 3, .childs = (Layout[]){
+            .initialChildCount = 3, .initialChilds = (ViewModel[]){
                 {
                     .w = 45,"%", .h = 100,"%", 
-                    .bgColor = &gray1,
+                    .bgColor = &gray1
                 },
                 {
                     .w = 10,"%", .h = 100,"%", 
-                    .bgColor = &gray2,
+                    .bgColor = &gray2
                 },
                 {
                     .w = 45,"%", .h = 100,"%", 
-                    .bgColor = &gray1,
+                    .bgColor = &gray1
                 }
             }
         }, 
         {
-            .w = 100,"%", .h = 18,"px", 
-            .bgColor = &white,
-        },
-        {
-            .stack = horizontal,
-            .childCount = 3, .childs = (Layout[]){
-                {
-                    .w = 55,"%", .h = 100,"%", 
-                    .bgColor = &gray1,
-                },
-                {
-                    .w = 10,"%", .h = 100,"%", 
-                    .bgColor = &gray2,
-                },
-                {
-                    .w = 35,"%", .h = 100,"%", 
-                    .bgColor = &gray1,
-                }
-            }
-        },
-        {
-            .w = 100,"%", .h = 18,"px", 
-            .bgColor = &white,
+            .w = 100,"%", .h = 22,"px", 
+            .bgColor = &blue1
         } 
     }
 }; 
 
 
-typedef struct _ViewModel {
-    Uint16 x, y, w, h, sumAbsH, sumAbsW, sumRelH, sumRelW;
-    SDL_Color* bgColor;
-    enum direction stack; 
-    struct _ViewModel* childs;
-    char* id;
-    bool resizable;
-    char* innerText;
-    //SDL_Image image;
-    enum {left, center, right} align;
-    enum {top, middle, bottom} vAlign;
-    Uint16 paddingLeft, paddingTop;
-} ViewModel;
-
-ViewModel viewModel = {};
-
-bool createModel(Layout* parentDefinition, ViewModel* parentModel) {
-
+bool createModel(ViewModel* parentNode) {
     // set the size of the dinamic array for the model's child nodes based on the layout's node childs
-    arrsetcap(parentModel->childs, parentDefinition->childCount);
-    // iterate layout child nodes
-    for (int i = 0; i < parentDefinition->childCount; i++) {
-        Layout* definition = &parentDefinition->childs[i];
-        // instantiate the model nodes
-        ViewModel model = {};
+    arrsetcap(parentNode->childs, parentNode->initialChildCount);
+    // iterate initial layout child nodes
+    for (int i = 0; i < parentNode->initialChildCount; i++) {
+        ViewModel node = parentNode->initialChilds[i];
 
         // set the sum of the absolute and relative dimensions of the child nodes
-        if (parentDefinition->stack == horizontal) { 
-            if (strcmp(definition->wUnit, "px") == 0 ) parentModel->sumAbsW += definition->w;
-            else parentModel->sumRelW += (definition->w == 0) ? 100 : definition->w;
+        if (parentNode->stack == horizontal) { 
+            if (strcmp(node.wUnit, "px") == 0 ) parentNode->sumAbsW += node.w;
+            else parentNode->sumRelW += (node.w == 0) ? 100 : node.w;
         }
-        if (parentDefinition->stack == vertical) { 
-            if (strcmp(definition->hUnit, "px") == 0 ) parentModel->sumAbsH += definition->h;
-            else parentModel->sumRelH += (definition->h == 0) ? 100 : definition->h;
+        if (parentNode->stack == vertical) { 
+            if (strcmp(node.hUnit, "px") == 0 ) parentNode->sumAbsH += node.h;
+            else parentNode->sumRelH += (node.h == 0) ? 100 : node.h;
         }
 
-        //recursivelly navigate to child nodes
-        if (!createModel(definition, &model)) return false;
+        // recursivelly navigate to child nodes
+        if (!createModel(&node)) return false;
         // add new model node to the dynamic array of parent node
-        arrput(parentModel->childs, model);
+        arrput(parentNode->childs, node);
     }
+    // cleanup initial layout definition nodes (now using dynamic version (layout->childs))
+    parentNode->initialChilds = NULL;
     return true;
 }
 
-bool loadModelAttributes(Layout* parentDefinition, ViewModel* parentModel, int x, int y, int parentWidth, int parentHeight) {
+bool loadModelAttributes(ViewModel* parentNode, int x, int y, int parentWidth, int parentHeight) {
     int w = parentWidth, h = parentHeight;
 
-    // iterate layout child nodes
-    for (int i = 0; i < parentDefinition->childCount; i++) {
-        Layout* definition = &parentDefinition->childs[i];
-        // get previously instantiated model node, with computed dimension sums (in createModel())
-        ViewModel* model = &parentModel->childs[i];
+    // iterate dynamic child nodes
+    for (int i = 0; i < parentNode->initialChildCount; i++) {
+        ViewModel* node = &parentNode->childs[i];
 
         // if the layout node has no dimensions, assume 100% of the available space
-        if (definition->w == 0) definition->w = 100;
-        if (definition->h == 0) definition->h = 100;
-        if (parentModel->sumRelW == 0) parentModel->sumRelW = 100;
-        if (parentModel->sumRelH == 0) parentModel->sumRelH = 100;
+        if (node->w == 0) node->w = 100;
+        if (node->h == 0) node->h = 100;
 
-
-        if (strcmp(definition->wUnit, "px") == 0 ) w = definition->w; 
-        else if (strcmp(definition->wUnit, "%") == 0 || definition->wUnit[0] == 0)
-            w = ((parentWidth - parentModel->sumAbsW) * definition->w / parentModel->sumRelW);
+        // assign either an absolute size in pizels or a relative size in %.
+        // if the percentages don't add up to 100, use the sum of the values as the max percent value
+        if (strcmp(node->wUnit, "px") == 0 ) w = node->w; 
+        else if (strcmp(node->wUnit, "%") == 0 || node->wUnit[0] == 0)
+            w = ((parentWidth - parentNode->sumAbsW) * node->w / 
+                    ((parentNode->sumRelW == 0) ? 100 : parentNode->sumRelW));
         else return false;
-        if (strcmp(definition->hUnit, "px") == 0 ) h = definition->h; 
-        else if (strcmp(definition->hUnit, "%") == 0 || definition->hUnit[0] == 0) 
-            h = ((parentHeight - parentModel->sumAbsH) * definition->h / parentModel->sumRelH);
+        if (strcmp(node->hUnit, "px") == 0 ) h = node->h; 
+        else if (strcmp(node->hUnit, "%") == 0 || node->hUnit[0] == 0) 
+            h = ((parentHeight - parentNode->sumAbsH) * node->h / 
+                    ((parentNode->sumRelH == 0) ? 100 : parentNode->sumRelH));
         else return false;
 
-        model->x = x; model->y = y; model->h = h; model->w = w;
-        model->bgColor = definition->bgColor;
+        // update dynamic node with calculated dimensions
+        node->x = x; node->y = y; node->h = h; node->w = w;
 
         //recursivelly navigate to child nodes
-        if (!loadModelAttributes(definition, model, x, y, w, h)) return false;
+        if (!loadModelAttributes(node, x, y, w, h)) return false;
 
         // adjust positioning for the next node
-        if (parentDefinition->stack == vertical) { 
+        if (parentNode->stack == vertical) { 
             y += h; 
-            h -= parentModel->sumAbsH - h; 
+            h -= parentNode->sumAbsH - h; 
         }
-        if (parentDefinition->stack == horizontal) { 
+        if (parentNode->stack == horizontal) { 
             x += w; 
-            w -= parentModel->sumAbsW - w;
+            w -= parentNode->sumAbsW - w;
         }
     }
     return true;
 }
 
-bool loadModel(int x, int y, int parentWidth, int parentHeight) { 
-    ViewModel* pModel = &viewModel;
-    if (!createModel(&layout, pModel)) return false;
-    if (!loadModelAttributes(&layout, pModel, x, y, parentWidth, parentHeight)) return false;
+bool loadModel(ViewModel* model, int x, int y, int parentWidth, int parentHeight) { 
+    if (!createModel(model)) return false;
+    if (!loadModelAttributes(model, x, y, parentWidth, parentHeight)) return false;
     return true;
 }
 

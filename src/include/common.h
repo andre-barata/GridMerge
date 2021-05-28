@@ -12,6 +12,9 @@ SDL_Color gray2     = { 0x25, 0x25, 0x26 };
 SDL_Color gray3     = { 0x2d, 0x2d, 0x2d };
 SDL_Color gray4     = { 0x3c, 0x3c, 0x3c };
 SDL_Color white     = { 0xff, 0xff, 0xff };
+SDL_Color blue1     = { 0x00, 0x7a, 0xcc };
+
+
 
 #include "font.h"
 
@@ -24,7 +27,7 @@ bool initWindow(int* width, int* height) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error initializing SDL! %s\n", SDL_GetError() );
         return false;
     }
-    mainWindow = SDL_CreateWindow("GridMerge", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS );
+    mainWindow = SDL_CreateWindow("GridMerge", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
     if (mainWindow == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating SDL window! %s\n", SDL_GetError() );
         return false;
