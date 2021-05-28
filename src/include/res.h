@@ -21,9 +21,13 @@ struct resStruct {
 
 // THE list of resource files
 RESFILE(roboto_thin,ttf)
+RESFILE(opensans_regular,ttf)
+RESFILE(opensans_semibold,ttf)
 //...
 void resInit(void) {
     RESINIT(roboto_thin,ttf)
+    RESINIT(opensans_regular,ttf)
+    RESINIT(opensans_semibold,ttf)
 //  ...
 }
 
