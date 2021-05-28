@@ -10,7 +10,7 @@
 bool renderLayoutRect(ViewModel* model);
 
 bool renderLayout(int x, int y, int windowWidth, int windowHeight) {
-    if (!loadModel(&layout, &viewModel, x, y, windowWidth, windowHeight)) return false;
+    if (!loadModel(x, y, windowWidth, windowHeight)) return false;
     return renderLayoutRect(&viewModel);
 }
 
@@ -22,8 +22,8 @@ bool renderLayoutRect(ViewModel* model) {
             if (child->bgColor != NULL) SDL_SetRenderDrawColor(windowRenderer, child->bgColor->r, child->bgColor->g, child->bgColor->b, 255);
             SDL_RenderFillRect(windowRenderer, &(SDL_Rect){child->x, child->y, child->w, child->h});
         }
-        
-        // recursivelly navicage to the child node
+
+        // recursivelly navigate to the child node
         if (!renderLayoutRect(child)) return false;
     }
     return true;
