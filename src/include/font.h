@@ -24,8 +24,8 @@ bool initFont() {
     return true;
 }
 
-bool drawText(SDL_Renderer* renderer, const char* text, int x, int y, int maxW, int maxH) {
-    SDL_Surface* textSurface = TTF_RenderUTF8_Shaded(mainFont, text, black, white);
+bool drawText(SDL_Renderer* renderer, const char* text, int x, int y, int maxW, int maxH, SDL_Color textColor) {
+    SDL_Surface* textSurface = TTF_RenderUTF8_Blended(mainFont, text, textColor);//TTF_RenderUTF8_Shaded(mainFont, text, black, white);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
 
     int w = textSurface->w > maxW ? maxW : textSurface->w;

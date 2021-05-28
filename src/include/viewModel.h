@@ -6,7 +6,7 @@
 
 enum direction   { horizontal, vertical };
 enum alignement  { left, center, right };
-enum vAlignement { top, middle, bottom };
+enum vAlignement { middle, top, bottom };
 typedef struct _ViewModel {
     Uint16 w; char wUnit[3]; // "px" or "%"
     Uint16 h; char hUnit[3];
@@ -21,6 +21,7 @@ typedef struct _ViewModel {
     enum alignement align;
     enum vAlignement vAlign;
     Uint16 paddingLeft, paddingTop;
+    // for internal calculations:
     Uint16 x, y, sumAbsH, sumAbsW, sumRelH, sumRelW;
 } ViewModel;
 
@@ -29,7 +30,8 @@ ViewModel layout = {
     .initialChildCount = 3, .initialChilds = (ViewModel[]){
         {
             .w = 100,"%", .h = 29,"px", 
-            .bgColor = &gray4
+            .bgColor = &gray4,
+            .innerText = "GridMerge v0.1", .align = center
         }, 
         {
             .stack = horizontal,

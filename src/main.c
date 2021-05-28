@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (strlen(inputText)) {
-            drawText(windowRenderer, inputText, 10, 10, 100, 40);
+            drawText(windowRenderer, inputText, 10, 10, 100, 40, white);
             SDL_RenderPresent(windowRenderer);
         }
     }

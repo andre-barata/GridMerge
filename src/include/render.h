@@ -21,6 +21,21 @@ bool renderLayoutRect(ViewModel* model) {
         if (child->w > 0 && child->h > 0) {
             if (child->bgColor != NULL) SDL_SetRenderDrawColor(windowRenderer, child->bgColor->r, child->bgColor->g, child->bgColor->b, 255);
             SDL_RenderFillRect(windowRenderer, &(SDL_Rect){child->x, child->y, child->w, child->h});
+            
+            if (child->innerText != NULL) {
+                int x, y, textWidth, calcWidth, glyphs;
+                TTF_MeasureUTF8(mainFont, child->innerText, child->w, &textWidth, &glyphs);
+                if (child->align = left) { x = child->x; y = child->y; }
+                else if (child->align = center) { 
+                    x = child->x + (child->w / 2) - (textWidth / 2); 
+                    y = child->y; 
+                }
+                else if (child->align = right) { 
+                    x = child->x +  child->w - textWidth; 
+                    y = child->y; 
+                }
+                drawText(windowRenderer, child->innerText, x, y, child->w, child->h, white);
+            }
         }
 
         // recursivelly navigate to the child node
