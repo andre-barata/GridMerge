@@ -23,18 +23,16 @@ bool renderLayoutRect(ViewModel* model) {
             SDL_RenderFillRect(windowRenderer, &(SDL_Rect){child->x, child->y, child->w, child->h});
             
             if (child->innerText != NULL) {
-                int x, y, textWidth, calcWidth, glyphs;
+                int x, y, textWidth, textHeight, calcWidth, glyphs;
                 TTF_MeasureUTF8(mainFont, child->innerText, child->w, &textWidth, &glyphs);
-                if (child->align = left) { x = child->x; y = child->y; }
-                else if (child->align = center) { 
-                    x = child->x + (child->w / 2) - (textWidth / 2); 
-                    y = child->y; 
-                }
-                else if (child->align = right) { 
-                    x = child->x +  child->w - textWidth; 
-                    y = child->y; 
-                }
-                drawText(windowRenderer, child->innerText, x, y, child->w, child->h, white);
+                textHeight = TTF_FontHeight(mainFont);
+                if (child->align == left) x = child->x;
+                else if (child->align == center) x = child->x + (child->w / 2) - (textWidth / 2); 
+                else if (child->align == right) x = child->x +  child->w - textWidth; 
+                if (child->vAlign == middle) y = child->y + (child->h / 2) - (textHeight / 2);
+                else if (child->vAlign == top) y = child->y; 
+                else if (child->vAlign == bottom) x = child->y + child->h - textHeight; 
+                drawText(windowRenderer, child->innerText, x, y, child->w, child->h, lightGray);
             }
         }
 
