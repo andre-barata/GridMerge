@@ -24,6 +24,9 @@
         "sdl_cpuinfo.h": "c",
         "utf8proc.h": "c",
         "random": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "atomic": "cpp",
+        "cstdint": "cpp",
+        "*.tcc": "cpp"
     }
 }

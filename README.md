@@ -2,7 +2,7 @@
 
 GridMerge will be a light tool for visually analyzing and merging data, in a more straightforward and user friendly way than Spreadsheet software like Excel usually offers.
 
-The GUI is built from scratch and follows a web like layout defined in viewModel.c
+The GUI is built from scratch and follows a web like layout defined in viewModel.h
 
 Project in C. Using mingw64/MSYS2 toolchains, SDL2. Has debug and standalone release makefiles, and VS Code configuration
 

@@ -15,11 +15,14 @@ typedef struct _ViewModel {
     int initialChildCount; struct _ViewModel *initialChilds;
     struct _ViewModel *childs;
     char* id;
-    bool resizable;
     char* innerText;
-    //SDL_Image image;
+    //SDL_Image* image;
     enum alignement align;
     enum vAlignement vAlign;
+    // behavior
+    bool dragsWindow;
+    void (*onClick)(); 
+    void (*onHover)(); 
     Uint16 paddingLeft, paddingTop;
     // for internal calculations:
     Uint16 x, y, sumAbsH, sumAbsW, sumRelH, sumRelW;
@@ -29,29 +32,56 @@ ViewModel layout = {
     .stack = vertical,
     .initialChildCount = 3, .initialChilds = (ViewModel[]){
         {
-            .w = 100,"%", .h = 29,"px", 
-            .bgColor = &gray4,
-            .innerText = "GridMerge v0.1", .align = center
+            .h = 30,"px",
+            .stack = horizontal,
+            .initialChildCount = 5, .initialChilds = (ViewModel[]){ // window header
+                {
+                    .w = 60,"px", //TODO: implement menus
+                    .innerText = "File...", .align = center,
+                    .bgColor = &gray4
+                },
+                {
+                    .bgColor = &gray4,
+                    //.innerText = "GridMerge v0.1", .align = center,
+                    .innerText = "Visual Studio Code ljtj", .align = center,
+                    .dragsWindow = true
+                },
+                {
+                    .w = 46,"px",
+                    .innerText = "_", .align = center,
+                    .bgColor = &gray4,
+                },
+                {
+                    .w = 46,"px",
+                    .innerText = "[]", .align = center,
+                    .bgColor = &gray4,
+                },
+                {
+                    .w = 46,"px",
+                    .innerText = "X", .align = center,
+                    .bgColor = &gray4,
+                }
+            }
         }, 
         {
             .stack = horizontal,
             .initialChildCount = 3, .initialChilds = (ViewModel[]){
                 {
-                    .w = 45,"%", .h = 100,"%", 
+                    .w = 45,"%",
                     .bgColor = &gray1
                 },
                 {
-                    .w = 10,"%", .h = 100,"%", 
-                    .bgColor = &gray2
+                    .w = 10,"%",
+                    .bgColor = &gray4 //gray2
                 },
                 {
-                    .w = 45,"%", .h = 100,"%", 
+                    .w = 45,"%",
                     .bgColor = &gray1
                 }
             }
         }, 
         {
-            .w = 100,"%", .h = 22,"px", 
+            .h = 22,"px", 
             .bgColor = &blue1
         } 
     }

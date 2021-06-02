@@ -10,6 +10,8 @@
 #include "include/viewModel.h"
 #include "include/render.h"
 
+#include "include/font2.h"
+
 int main(int argc, char *argv[]) {
     int windowWidth, windowHeight, prevLen = 0;
     char inputText[1024] = "";
@@ -48,18 +50,29 @@ int main(int argc, char *argv[]) {
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, shget(list, "key3"));
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, shget(list, "key4"));
 
+    // test
+    initFont2(windowRenderer);
+    //drawText(windowRenderer, "testing 123 testing ç à", 200, 200, 300, 40, white);
+    /*
+    stopwatchStart();
+    drawText(windowRenderer, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ", 870, 150, 700, 200, white);
+    stopwatchStop("font1 1st time");
 
-    // test array
-    typedef struct { 
-        char* aString;
-    } arrItem;
-    arrItem* arr = NULL;
-    arrsetcap(arr, 2);
-    arrput(arr, (arrItem){ "item1" });
-    arrput(arr, (arrItem){ "item2" });
+    stopwatchStart();
+    drawText(windowRenderer, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ", 870, 200, 700, 200, white);
+    stopwatchStop("font1 2nd time");
 
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, arr[0].aString);
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, arr[1].aString);
+    stopwatchStart();
+    drawText2(windowRenderer, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ", 870, 250, 700, 200, white);
+    stopwatchStop("font2 1st time");
+
+    stopwatchStart();
+    drawText2(windowRenderer, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ", 870, 300, 700, 200, white);
+    stopwatchStop("font2 2nd time");*/
+    drawText2(windowRenderer, "andre", 870, 250, 700, 200, white);
+
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "pixel format = %s \n", SDL_GetPixelFormatName(SDL_GetWindowPixelFormat( mainWindow )));
+    //370546692
 
     SDL_RenderPresent(windowRenderer);
 

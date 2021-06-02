@@ -17,16 +17,23 @@ SDL_Color blue1     = { 0x00, 0x7a, 0xcc };
 
 #include "font.h"
 
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "stb_truetype.h"
+
 SDL_Window* mainWindow;
 SDL_Renderer* windowRenderer;
 SDL_Texture *bufferTexture;
+
+SDL_HitTestResult resizeCallback(SDL_Window* window, const SDL_Point* point, void* data){ 
+    return SDL_HITTEST_RESIZE_BOTTOM;
+}
 
 bool initWindow(int* width, int* height) {
     if( SDL_Init( SDL_INIT_VIDEO ) != 0 ) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error initializing SDL! %s\n", SDL_GetError() );
         return false;
     }
-    mainWindow = SDL_CreateWindow("GridMerge", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
+    mainWindow = SDL_CreateWindow("GridMerge", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_RESIZABLE );
     if (mainWindow == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating SDL window! %s\n", SDL_GetError() );
         return false;
@@ -57,11 +64,13 @@ bool initWindow(int* width, int* height) {
         SDL_SetWindowPosition(mainWindow, usable_bounds.x, usable_bounds.y);
         SDL_SetWindowSize(mainWindow, usable_bounds.w, usable_bounds.h);
     }
-
+    SDL_SetWindowResizable(mainWindow, SDL_TRUE);
+    //SDL_SetWindowHitTest(mainWindow, resizeCallback, NULL);
+    //SDL_MinimizeWindow(mainWindow);
     SDL_GetWindowSize(mainWindow, width, height);
 
     // create a buffer bitmap and a GPU texture from it
-    /*
+    
     SDL_Surface* buffer = SDL_CreateRGBSurfaceWithFormat(0, *width, *height, 32, SDL_PIXELFORMAT_RGBA32);
     if (buffer == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture surface: %s\n", SDL_GetError());
@@ -73,7 +82,7 @@ bool initWindow(int* width, int* height) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture: %s\n", SDL_GetError());
 		return false;
 	}
-    */
+    
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Continuing from window init... \n" );
     return true;
 }
@@ -89,6 +98,18 @@ int terminate() {
     SDL_DestroyWindow(mainWindow);
     SDL_Quit();
     return 1;
+}
+
+uint64_t stopwatchStartTime, stopwatchStopTime;
+double stopwatchElapsedTime;
+void stopwatchStart() {
+    stopwatchStartTime = SDL_GetPerformanceCounter();
+}
+
+void stopwatchStop(char* logMessage) {
+    stopwatchStopTime = SDL_GetPerformanceCounter();
+    double elapsedTime = (double)((stopwatchStopTime - stopwatchStartTime) / (double)(SDL_GetPerformanceFrequency()));
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s : duration = %f s\n", logMessage, elapsedTime);
 }
 
 #endif

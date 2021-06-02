@@ -15,7 +15,7 @@ bool initFont() {
 		return false;
     }
     // load the main TTF font from embeded resources
-	if (!(mainFont = TTF_OpenFontRW(SDL_RWFromMem((void*)(rc_opensans_semibold.start), rc_opensans_semibold.size), 1, 12))) {
+	if (!(mainFont = TTF_OpenFontRW(SDL_RWFromMem((void*)(rc_opensans_regular.start), rc_opensans_regular.size), 1, 12))) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error loading font: %s\n", SDL_GetError() );
 		return false;
 	}
