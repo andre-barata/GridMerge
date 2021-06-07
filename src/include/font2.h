@@ -50,10 +50,10 @@ int getCodepointSize(unsigned char* text) {
 Uint32 getCodepoint(unsigned char* text, int size) {
     Uint32 cp;
     switch (size) {
-        case 1: cp = text[0] & 0x7F;
-        case 2: cp = text[0] & 0x1F;
-        case 3: cp = text[0] & 0x0F;
-        case 4: cp = text[0] & 0x07;
+        case 1: cp = text[0] & 0x7F; break;
+        case 2: cp = text[0] & 0x1F; break;
+        case 3: cp = text[0] & 0x0F; break;
+        case 4: cp = text[0] & 0x07; break;
     }
     for(int i = 1; i < size; ++i)
         cp = (cp << 6) | (Uint32)(text[i] & 0x3F);

@@ -5,6 +5,9 @@
 #include <SDL.h>
 #define STB_DS_IMPLEMENTATION
 #include "stb_ds.h"
+#define STBI_ONLY_PNG
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 SDL_Color black     = { 0x00, 0x00, 0x00 };
 SDL_Color gray1     = { 0x1e, 0x1e, 0x1e };
@@ -27,6 +30,8 @@ SDL_Texture *bufferTexture;
 SDL_HitTestResult resizeCallback(SDL_Window* window, const SDL_Point* point, void* data){ 
     return SDL_HITTEST_RESIZE_BOTTOM;
 }
+
+// initializations
 
 bool initWindow(int* width, int* height) {
     if( SDL_Init( SDL_INIT_VIDEO ) != 0 ) {
@@ -64,7 +69,7 @@ bool initWindow(int* width, int* height) {
         SDL_SetWindowPosition(mainWindow, usable_bounds.x, usable_bounds.y);
         SDL_SetWindowSize(mainWindow, usable_bounds.w, usable_bounds.h);
     }
-    SDL_SetWindowResizable(mainWindow, SDL_TRUE);
+    //SDL_SetWindowResizable(mainWindow, SDL_TRUE);
     //SDL_SetWindowHitTest(mainWindow, resizeCallback, NULL);
     //SDL_MinimizeWindow(mainWindow);
     SDL_GetWindowSize(mainWindow, width, height);
@@ -87,8 +92,90 @@ bool initWindow(int* width, int* height) {
     return true;
 }
 
-int terminate() {
+// StopWatch timer
+
+uint64_t stopwatchStartTime, stopwatchStopTime;
+double stopwatchElapsedTime;
+void stopwatchStart() {
+    stopwatchStartTime = SDL_GetPerformanceCounter();
+}
+void stopwatchStop(char* logMessage) {
+    stopwatchStopTime = SDL_GetPerformanceCounter();
+    double elapsedTime = (double)((stopwatchStopTime - stopwatchStartTime) / (double)(SDL_GetPerformanceFrequency()));
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s : duration = %f s\n", logMessage, elapsedTime);
+}
+
+// Sprites
+
+typedef struct _Sprite {
+    const char* id;
+    Uint16 x, y;
+    enum { light, dark } brightness;
+    struct _SpriteSet* parentSet;        
+} Sprite;
+typedef struct _SpriteSet {
+    SDL_Texture* texture;
+    Uint16 spriteW, spriteH;
+    Uint16 numSpritesX, numSpritesY;
+    ResStruct* resource;
+    Sprite* sprites;
+} SpriteSet;
+
+// define a sprite set for image set10x10.png embeded in the resources
+SpriteSet set10x10 = {
+    .spriteW = 10, .spriteH = 10,
+    .numSpritesX = 4, .numSpritesY = 2,
+    .resource = &rc_set10x10,
+    .sprites = (Sprite[]) {
+        { .id = "close-dark", .brightness = dark },
+        { .id = "restore-dark", .brightness = dark },
+        { .id = "minimize-dark", .brightness = dark },
+        { .id = "maximize-dark", .brightness = dark },
+        { .id = "close-light", .brightness = light },
+        { .id = "restore-light", .brightness = light },
+        { .id = "minimize-light", .brightness = light },
+        { .id = "maximize-light", .brightness = light }
+    }
+};
+
+// HashSet for addressing each Sprite by Id
+typedef struct { char* key; Sprite value; } spriteItem;
+spriteItem* spriteHashSet = NULL;
+
+SDL_Texture* loadSpriteSetTexture(ResStruct* resource) {
+    int w,h,bpp;
+    // load PNG to RGBA buffer
+    unsigned char *setBuffer = stbi_load_from_memory((const stbi_uc*)(resource->start), resource->size, &w, &h, &bpp, 4);
+    if (setBuffer == NULL) return false;
+    SDL_Surface* setSurface = SDL_CreateRGBSurfaceWithFormatFrom(setBuffer, w, h, bpp, w*bpp, SDL_PIXELFORMAT_ARGB8888);
+    if (setSurface == NULL) return false;
+    SDL_Texture* setTexture = SDL_CreateTextureFromSurface(windowRenderer, setSurface);
+    SDL_FreeSurface(setSurface); setSurface = NULL;
+    free(setBuffer); setBuffer = NULL;
+    return setTexture;
+}
+
+bool loadSpriteSets() {
+    // init set10x10
+    SDL_Texture* texture10x10 = loadSpriteSetTexture(set10x10.resource);
+    for (int i = 0; i < set10x10.numSpritesX * set10x10.numSpritesY; i++) {
+        set10x10.sprites[i].parentSet = &set10x10;
+        set10x10.texture = texture10x10;
+        set10x10.sprites[i].y = (i / set10x10.numSpritesX) * set10x10.spriteH;
+        set10x10.sprites[i].x = (i % set10x10.numSpritesX) * set10x10.spriteW;
+        shput(spriteHashSet, set10x10.sprites[i].id, set10x10.sprites[i]);
+    }
+
+    return true;
+}
+
+// terminate and cleanup
+
+void cleanup() {
     SDL_StopTextInput();
+
+    SDL_DestroyTexture(set10x10.texture);
+    shfree(spriteHashSet);
 
 	TTF_CloseFont(mainFont);
 	SDL_DestroyTexture(bufferTexture);
@@ -96,20 +183,16 @@ int terminate() {
 
     SDL_DestroyRenderer(windowRenderer);
     SDL_DestroyWindow(mainWindow);
+}
+int terminate() {
+    cleanup();
     SDL_Quit();
     return 1;
 }
-
-uint64_t stopwatchStartTime, stopwatchStopTime;
-double stopwatchElapsedTime;
-void stopwatchStart() {
-    stopwatchStartTime = SDL_GetPerformanceCounter();
+int terminateAndLog(const char* text) {
+    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s :: %s\n", text, SDL_GetError());
+    terminate();
 }
 
-void stopwatchStop(char* logMessage) {
-    stopwatchStopTime = SDL_GetPerformanceCounter();
-    double elapsedTime = (double)((stopwatchStopTime - stopwatchStartTime) / (double)(SDL_GetPerformanceFrequency()));
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s : duration = %f s\n", logMessage, elapsedTime);
-}
 
 #endif

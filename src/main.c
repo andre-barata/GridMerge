@@ -2,7 +2,6 @@
 #include <stdbool.h>
 //#include <utf8proc.h>
 #include <SDL.h>
-#include <SDL_image.h>
 #include "include/SDL_ttf.h"
 #include "include/res.h"
 #include "include/common.h"
@@ -19,39 +18,22 @@ int main(int argc, char *argv[]) {
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
     resInit();
 
-    if(!initWindow(&windowWidth, &windowHeight)) return terminate();
+    if (!initWindow(&windowWidth, &windowHeight)) return terminateAndLog("Could not init main window");
+    if (!initFont()) return terminateAndLog("Failed to load fonts");
+    if (!loadSpriteSets()) return terminateAndLog("Failed to load sprite set");
+    if (!renderLayout(windowRenderer, 0, 0, windowWidth, windowHeight)) return terminateAndLog("Error while rendering the main layout!");
 
-    if(!initFont()) return terminate();
+    // #### functionality tests: #########
 
-    /*
+/*
     // for loading Images:
 	if(IMG_Init(IMG_INIT_PNG) < 0) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error initializing SDL_image: %s\n", SDL_GetError() );
 		return terminate();
 	}
-    */
+*/
 
-    if (!renderLayout(0, 0, windowWidth, windowHeight)) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error while rendering the main layout! %s\n", SDL_GetError() );
-        return terminate();
-    }
-
-    // test hashmap
-    typedef struct { 
-        char* key; char* value;
-    } listItem;
-    listItem* list = NULL;
-    shput(list, "key1", "h");
-    shput(list, "key2", "e");
-    shput(list, "key3", "l");
-    shput(list, "key4", "o");
-
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, shget(list, "key2"));
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, shget(list, "key3"));
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, shget(list, "key4"));
-
-    // test
-    initFont2(windowRenderer);
+ //   initFont2(windowRenderer);
     //drawText(windowRenderer, "testing 123 testing ç à", 200, 200, 300, 40, white);
     /*
     stopwatchStart();
@@ -69,10 +51,7 @@ int main(int argc, char *argv[]) {
     stopwatchStart();
     drawText2(windowRenderer, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ", 870, 300, 700, 200, white);
     stopwatchStop("font2 2nd time");*/
-    drawText2(windowRenderer, "andre", 870, 250, 700, 200, white);
-
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "pixel format = %s \n", SDL_GetPixelFormatName(SDL_GetWindowPixelFormat( mainWindow )));
-    //370546692
+//    drawText2(windowRenderer, "andre", 870, 250, 700, 200, white);
 
     SDL_RenderPresent(windowRenderer);
 
@@ -106,5 +85,6 @@ int main(int argc, char *argv[]) {
             SDL_RenderPresent(windowRenderer);
         }
     }
-    return terminate();
+    cleanup();
+    return 0;
 }

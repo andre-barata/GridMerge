@@ -15,11 +15,11 @@ bool initFont() {
 		return false;
     }
     // load the main TTF font from embeded resources
-	if (!(mainFont = TTF_OpenFontRW(SDL_RWFromMem((void*)(rc_opensans_regular.start), rc_opensans_regular.size), 1, 12))) {
+	if (!(mainFont = TTF_OpenFontRW(SDL_RWFromMem((void*)(rc_opensans_semibold.start), rc_opensans_semibold.size), 1, 12))) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error loading font: %s\n", SDL_GetError() );
 		return false;
 	}
-    TTF_SetFontHinting(mainFont, TTF_HINTING_LIGHT_SUBPIXEL);
+    TTF_SetFontHinting(mainFont, TTF_HINTING_LCD_SUBPIXEL);
 
     return true;
 }
@@ -31,6 +31,7 @@ bool drawText(SDL_Renderer* renderer, const char* text, int x, int y, int maxW, 
     int w = textSurface->w > maxW ? maxW : textSurface->w;
     int h = textSurface->h > maxH ? maxH : textSurface->h;
 
+    SDL_SetTextureBlendMode(textTexture, SDL_BLENDMODE_ADD);
     SDL_RenderCopy(renderer, textTexture, &(SDL_Rect){0,0,w,h}, &(SDL_Rect){x, y, w, h});
 
     SDL_DestroyTexture(textTexture);

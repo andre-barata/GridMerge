@@ -196,6 +196,7 @@ typedef struct cached_glyph {
     int advance;
     union {
         /* TTF_HINTING_LIGHT_SUBPIXEL (only pixmap) */
+        /* TTF_HINTING_LCD_SUBPIXEL */
         struct {
             int lsb_minus_rsb;
             int translation;
@@ -392,6 +393,57 @@ static SDL_INLINE void BG_Blended_Color(const TTF_Image *image, Uint32 *destinat
             dst = (Uint32 *)((Uint8 *)dst + dstskip);
         }
     }
+}
+
+/* Blend with LCD rendering */
+static SDL_INLINE void BG_Blended_LCD(const TTF_Image *image, Uint32 *destination, Sint32 srcskip, Uint32 dstskip, Uint8 fg_alpha, Uint32 bg)
+{
+    const Uint32 *src   = (Uint32 *)image->buffer;
+    Uint32      *dst    = destination;
+    Uint32       width  = image->width;
+    Uint32       height = image->rows;
+
+    Uint32 alpha;
+    Uint32 tmp;
+    Uint32 r;
+    Uint32 g;
+    Uint32 b;
+    Uint8 bg_r;
+    Uint8 bg_g;
+    Uint8 bg_b;
+
+    bg_r = (bg >> 16) & 0xff;
+    bg_g = (bg >> 8) & 0xff;
+    bg_b = (bg >> 0) & 0xff;
+
+    if (fg_alpha == 0) {
+        fg_alpha = SDL_ALPHA_OPAQUE;
+    }
+    alpha = (fg_alpha << 24);
+
+    while (height--) {
+        /* *INDENT-OFF* */
+        DUFFS_LOOP4(
+                tmp = *src++;
+                if (tmp) {
+                    r = (tmp >> 16) & 0xff;
+                    g = (tmp >> 8) & 0xff;
+                    b = (tmp >> 0) & 0xff;
+
+                    r = DIVIDE_BY_255(bg_r * r) << 16;
+                    g = DIVIDE_BY_255(bg_g * g) << 8;
+                    b = DIVIDE_BY_255(bg_b * b) << 0;
+
+                    *dst = r | g | b | alpha;
+                }
+                dst++;
+
+                , width);
+        /* *INDENT-ON* */
+        src = (const Uint32 *)((const Uint8 *)src + srcskip);
+        dst = (Uint32 *)((Uint8 *)dst + dstskip);
+    }
+
 }
 
 #if TTF_USE_SDF
@@ -1015,6 +1067,10 @@ int Render_Line_##NAME(TTF_Font *font, SDL_Surface *textbuf, int xstart, int yst
     const int alignment = Get_Alignement() - 1;                                                                         \
     const int bpp = ((IS_BLENDED) ? 4 : 1);                                                                             \
     unsigned int i;                                                                                                     \
+    Uint32 bg = 0;                                                                                                      \
+    if (font->ft_load_target == FT_LOAD_TARGET_LCD) {                                                                   \
+        bg = *(Uint32 *)textbuf->pixels;                                                                                \
+    }                                                                                                                   \
     for (i = 0; i < font->pos_len; i++) {                                                                               \
         FT_UInt idx = font->pos_buf[i].index;                                                                           \
         int x       = font->pos_buf[i].x;                                                                               \
@@ -1067,7 +1123,11 @@ int Render_Line_##NAME(TTF_Font *font, SDL_Surface *textbuf, int xstart, int yst
                     /* Compute srcskip, dstskip */                                                                      \
                     srcskip = image->pitch - 4 * image->width;                                                          \
                     dstskip = textbuf->pitch - image->width * bpp;                                                      \
-                    BG_Blended_Color(image, (Uint32 *)dst, srcskip, dstskip, fg_alpha);                                 \
+                    if (image->is_color == 1) {                                                                         \
+                        BG_Blended_Color(image, (Uint32 *)dst, srcskip, dstskip, fg_alpha);                             \
+                    } else /* is_color == 2 */ {                                                                        \
+                        BG_Blended_LCD(image, (Uint32 *)dst, srcskip, dstskip, fg_alpha, bg);                           \
+                    }                                                                                                   \
                 }                                                                                                       \
                 /* restore modification */                                                                              \
                 image->width = saved_width;                                                                             \
@@ -1092,7 +1152,11 @@ int Render_Line_##NAME(TTF_Font *font, SDL_Surface *textbuf, int xstart, int yst
                     }                                                                                                   \
                 } else if (IS_BLENDED && image->is_color) {                                                             \
                     srcskip -= 3 * image_clipped.width;                                                                 \
-                    BG_Blended_Color(&image_clipped, (Uint32 *)dst, srcskip, dstskip, fg_alpha);                        \
+                    if (image->is_color == 1) {                                                                         \
+                        BG_Blended_Color(&image_clipped, (Uint32 *)dst, srcskip, dstskip, fg_alpha);                    \
+                    } else /* is_color == 2 */ {                                                                        \
+                        BG_Blended_LCD(&image_clipped, (Uint32 *)dst, srcskip, dstskip, fg_alpha, bg);                  \
+                    }                                                                                                   \
                 }                                                                                                       \
             }                                                                                                           \
             image->buffer = saved_buffer;                                                                               \
@@ -1958,6 +2022,11 @@ static FT_Error Load_Glyph(TTF_Font *font, c_glyph *cached, int want, int transl
                 slot->format == FT_GLYPH_FORMAT_OUTLINE, slot->format == FT_GLYPH_FORMAT_BITMAP);
 #endif
 
+        /* Adjust for TTF_HINTING_LCD_SUBPIXEL: size for RGB */
+        if (font->ft_load_target == FT_LOAD_TARGET_LCD) {
+            cached->sz_width /= 3;
+        }
+
         /* Adjust for bold text */
         if (TTF_HANDLE_STYLE_BOLD(font)) {
             cached->sz_width += font->glyph_overhang;
@@ -2005,6 +2074,9 @@ static FT_Error Load_Glyph(TTF_Font *font, c_glyph *cached, int want, int transl
                 ft_render_mode = FT_RENDER_MODE_SDF;
             }
 #endif
+            if (font->ft_load_target == FT_LOAD_TARGET_LCD) {
+                ft_render_mode = FT_RENDER_MODE_LCD;
+            }
         }
 
         /* Subpixel translation, flush previous datas */
@@ -2098,6 +2170,9 @@ static FT_Error Load_Glyph(TTF_Font *font, c_glyph *cached, int want, int transl
             dst->pitch += 3 * dst->width;
         }
 #endif
+        if (src->pixel_mode == FT_PIXEL_MODE_LCD) {
+            dst->pitch += 3 * dst->width;
+        }
 
         if (dst->rows != 0) {
             unsigned int i;
@@ -2148,6 +2223,9 @@ static FT_Error Load_Glyph(TTF_Font *font, c_glyph *cached, int want, int transl
                     quotient  = src->width;
                     remainder = 0;
 #endif
+                } else if (src->pixel_mode == FT_PIXEL_MODE_LCD) {
+                    quotient  = src->width / 3;
+                    remainder = 0;
                 } else {
                     quotient  = src->width;
                     remainder = 0;
@@ -2287,6 +2365,18 @@ static FT_Error Load_Glyph(TTF_Font *font, c_glyph *cached, int want, int transl
                         *dstp++ = alpha;
                     }
 #endif
+                } else if (src->pixel_mode == FT_PIXEL_MODE_LCD) {
+                    while (quotient--) {
+                        Uint8 alpha = 0;
+                        Uint8 r, g, b;
+                        r = *srcp++;
+                        g = *srcp++;
+                        b = *srcp++;
+                        *dstp++ = b;
+                        *dstp++ = g;
+                        *dstp++ = r;
+                        *dstp++ = alpha;
+                    }
                 } else {
                     SDL_memcpy(dstp, srcp, src->width);
                 }
@@ -2335,6 +2425,10 @@ static FT_Error Load_Glyph(TTF_Font *font, c_glyph *cached, int want, int transl
 #else
         dst->is_color = 0;
 #endif
+        if (src->pixel_mode == FT_PIXEL_MODE_LCD) {
+            dst->is_color = 2;
+        }
+
 
         /* Mark that we rendered this format */
         if (mono) {
@@ -3615,11 +3709,18 @@ void TTF_SetFontHinting(TTF_Font *font, int hinting)
         font->ft_load_target = FT_LOAD_TARGET_MONO;
     } else if (hinting == TTF_HINTING_NONE) {
         font->ft_load_target = FT_LOAD_NO_HINTING;
+    } else if (hinting == TTF_HINTING_LCD_SUBPIXEL) {
+        font->ft_load_target = FT_LOAD_TARGET_LCD;
     } else {
         font->ft_load_target = FT_LOAD_TARGET_NORMAL;
     }
 
-    font->render_subpixel = (hinting == TTF_HINTING_LIGHT_SUBPIXEL) ? 1 : 0;
+    if (hinting == TTF_HINTING_LIGHT_SUBPIXEL || hinting == TTF_HINTING_LCD_SUBPIXEL) {
+        font->render_subpixel = 1;
+    } else {
+        font->render_subpixel = 0;
+    }
+
 #if TTF_USE_HARFBUZZ
     /* update flag for HB */
     hb_ft_font_set_load_flags(font->hb_font, FT_LOAD_DEFAULT | font->ft_load_target);
@@ -3642,6 +3743,8 @@ int TTF_GetFontHinting(const TTF_Font *font)
         return TTF_HINTING_MONO;
     } else if (font->ft_load_target == FT_LOAD_NO_HINTING) {
         return TTF_HINTING_NONE;
+    } else if (font->ft_load_target == FT_LOAD_TARGET_LCD) {
+        return TTF_HINTING_LCD_SUBPIXEL;
     }
     return TTF_HINTING_NORMAL;
 }

@@ -16,7 +16,7 @@ typedef struct _ViewModel {
     struct _ViewModel *childs;
     char* id;
     char* innerText;
-    //SDL_Image* image;
+    char* imageId;
     enum alignement align;
     enum vAlignement vAlign;
     // behavior
@@ -42,23 +42,22 @@ ViewModel layout = {
                 },
                 {
                     .bgColor = &gray4,
-                    //.innerText = "GridMerge v0.1", .align = center,
-                    .innerText = "Visual Studio Code ljtj", .align = center,
+                    .innerText = "GridMerge v0.1", .align = center,
                     .dragsWindow = true
                 },
                 {
                     .w = 46,"px",
-                    .innerText = "_", .align = center,
+                    .imageId = "minimize-light", .align = center,
                     .bgColor = &gray4,
                 },
                 {
                     .w = 46,"px",
-                    .innerText = "[]", .align = center,
+                    .imageId = "restore-light", .align = center,
                     .bgColor = &gray4,
                 },
                 {
                     .w = 46,"px",
-                    .innerText = "X", .align = center,
+                    .imageId = "close-light", .align = center,
                     .bgColor = &gray4,
                 }
             }

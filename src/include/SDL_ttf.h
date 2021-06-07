@@ -139,6 +139,7 @@ extern DECLSPEC void SDLCALL TTF_SetFontOutline(TTF_Font *font, int outline);
 #define TTF_HINTING_MONO            2
 #define TTF_HINTING_NONE            3
 #define TTF_HINTING_LIGHT_SUBPIXEL  4
+#define TTF_HINTING_LCD_SUBPIXEL    5
 extern DECLSPEC int SDLCALL TTF_GetFontHinting(const TTF_Font *font);
 extern DECLSPEC void SDLCALL TTF_SetFontHinting(TTF_Font *font, int hinting);
 
