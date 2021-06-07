@@ -23,40 +23,12 @@ int main(int argc, char *argv[]) {
     if (!loadSpriteSets()) return terminateAndLog("Failed to load sprite set");
     if (!renderLayout(windowRenderer, 0, 0, windowWidth, windowHeight)) return terminateAndLog("Error while rendering the main layout!");
 
-    // #### functionality tests: #########
-
-/*
-    // for loading Images:
-	if(IMG_Init(IMG_INIT_PNG) < 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error initializing SDL_image: %s\n", SDL_GetError() );
-		return terminate();
-	}
-*/
-
- //   initFont2(windowRenderer);
-    //drawText(windowRenderer, "testing 123 testing ç à", 200, 200, 300, 40, white);
-    /*
-    stopwatchStart();
-    drawText(windowRenderer, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ", 870, 150, 700, 200, white);
-    stopwatchStop("font1 1st time");
-
-    stopwatchStart();
-    drawText(windowRenderer, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ", 870, 200, 700, 200, white);
-    stopwatchStop("font1 2nd time");
-
-    stopwatchStart();
-    drawText2(windowRenderer, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ", 870, 250, 700, 200, white);
-    stopwatchStop("font2 1st time");
-
-    stopwatchStart();
-    drawText2(windowRenderer, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ", 870, 300, 700, 200, white);
-    stopwatchStop("font2 2nd time");*/
-//    drawText2(windowRenderer, "andre", 870, 250, 700, 200, white);
-
     SDL_RenderPresent(windowRenderer);
 
 	// Start sending SDL_TextInput events
-    SDL_StartTextInput();
+    //SDL_StartTextInput();
+
+    renderHover(windowRenderer, 1500, 20);
 
     bool quit = false;
     while(!quit) {
@@ -67,6 +39,7 @@ int main(int argc, char *argv[]) {
             switch (e.type) {
                 case SDL_QUIT:
                     quit = true;
+                    break;
                 case SDL_TEXTINPUT:
                     prevLen = strlen(inputText);
                     sprintf(inputText, "%s%s", inputText, e.text.text);
@@ -77,13 +50,19 @@ int main(int argc, char *argv[]) {
                         inputText[prevLen] = 0;
                     }
                     break;
+                case SDL_MOUSEMOTION:
+                    renderHover(windowRenderer, e.motion.x, e.motion.y);
+                    break;
+                case SDL_WINDOWEVENT:
+                    if (e.window.event == SDL_WINDOWEVENT_LEAVE)
+                        clearHover(windowRenderer);
             }
         }
 
-        if (strlen(inputText)) {
+        /*if (strlen(inputText)) {
             drawText(windowRenderer, inputText, 10, 10, 100, 40, white);
             SDL_RenderPresent(windowRenderer);
-        }
+        }*/
     }
     cleanup();
     return 0;

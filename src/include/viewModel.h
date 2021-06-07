@@ -11,6 +11,7 @@ typedef struct _ViewModel {
     Uint16 w; char wUnit[3]; // "px" or "%"
     Uint16 h; char hUnit[3];
     SDL_Color* bgColor;
+    SDL_Color* bgHover;
     enum direction stack; 
     int initialChildCount; struct _ViewModel *initialChilds;
     struct _ViewModel *childs;
@@ -22,10 +23,10 @@ typedef struct _ViewModel {
     // behavior
     bool dragsWindow;
     void (*onClick)(); 
-    void (*onHover)(); 
     Uint16 paddingLeft, paddingTop;
     // for internal calculations:
-    Uint16 x, y, sumAbsH, sumAbsW, sumRelH, sumRelW;
+    Uint16 x, y, x2, y2, sumAbsH, sumAbsW, sumRelH, sumRelW;
+    enum { none = 0, hover = 1 << 0 } state;
 } ViewModel;
 
 ViewModel layout = { 
@@ -49,16 +50,19 @@ ViewModel layout = {
                     .w = 46,"px",
                     .imageId = "minimize-light", .align = center,
                     .bgColor = &gray4,
+                    .bgHover = &gray6,
                 },
                 {
                     .w = 46,"px",
                     .imageId = "restore-light", .align = center,
                     .bgColor = &gray4,
+                    .bgHover = &gray6,
                 },
                 {
                     .w = 46,"px",
                     .imageId = "close-light", .align = center,
                     .bgColor = &gray4,
+                    .bgHover = &gray6,
                 }
             }
         }, 
@@ -71,7 +75,7 @@ ViewModel layout = {
                 },
                 {
                     .w = 10,"%",
-                    .bgColor = &gray4 //gray2
+                    .bgColor = &gray2
                 },
                 {
                     .w = 45,"%",
@@ -139,7 +143,7 @@ bool loadModelAttributes(ViewModel* parentNode, int x, int y, int parentWidth, i
         else return false;
 
         // update dynamic node with calculated dimensions
-        node->x = x; node->y = y; node->h = h; node->w = w;
+        node->x = x; node->y = y; node->x2 = x + w; node->y2 = y + h; node->h = h; node->w = w;
 
         //recursivelly navigate to child nodes
         if (!loadModelAttributes(node, x, y, w, h)) return false;

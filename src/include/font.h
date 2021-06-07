@@ -26,16 +26,19 @@ bool initFont() {
 
 bool drawText(SDL_Renderer* renderer, const char* text, int x, int y, int maxW, int maxH, SDL_Color textColor) {
     SDL_Surface* textSurface = TTF_RenderUTF8_Blended(mainFont, text, textColor);//TTF_RenderUTF8_Shaded(mainFont, text, black, white);
+    if (textSurface == NULL) return false;
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    if (textTexture == NULL) return false;
 
     int w = textSurface->w > maxW ? maxW : textSurface->w;
     int h = textSurface->h > maxH ? maxH : textSurface->h;
 
-    SDL_SetTextureBlendMode(textTexture, SDL_BLENDMODE_ADD);
-    SDL_RenderCopy(renderer, textTexture, &(SDL_Rect){0,0,w,h}, &(SDL_Rect){x, y, w, h});
+    if (SDL_SetTextureBlendMode(textTexture, SDL_BLENDMODE_ADD) != 0) return false;
+    if (SDL_RenderCopy(renderer, textTexture, &(SDL_Rect){0,0,w,h}, &(SDL_Rect){x, y, w, h}) != 0) return false;
 
     SDL_DestroyTexture(textTexture);
     SDL_FreeSurface(textSurface);
+    return true;
 }
 
 #endif
