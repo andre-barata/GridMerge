@@ -19,6 +19,7 @@ SDL_Color gray6     = { 0x50, 0x50, 0x50 };
 SDL_Color lightGray = { 0xcc, 0xcc, 0xcc };
 SDL_Color white     = { 0xff, 0xff, 0xff };
 SDL_Color blue1     = { 0x00, 0x7a, 0xcc };
+SDL_Color red1      = { 0xe6, 0x0c, 0x28 };
 
 #include "font.h"
 
@@ -77,7 +78,7 @@ bool initWindow(int* width, int* height) {
     SDL_GetWindowSize(mainWindow, width, height);
 
     // create a buffer bitmap and a GPU texture from it
-    
+    /*
     SDL_Surface* buffer = SDL_CreateRGBSurfaceWithFormat(0, *width, *height, 32, SDL_PIXELFORMAT_RGBA32);
     if (buffer == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture surface: %s\n", SDL_GetError());
@@ -89,7 +90,7 @@ bool initWindow(int* width, int* height) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture: %s\n", SDL_GetError());
 		return false;
 	}
-    
+    */
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Continuing from window init... \n" );
     return true;
 }
@@ -185,10 +186,10 @@ void cleanup() {
 
     SDL_DestroyRenderer(windowRenderer);
     SDL_DestroyWindow(mainWindow);
+    SDL_Quit();
 }
 int terminate() {
     cleanup();
-    SDL_Quit();
     return 1;
 }
 int terminateAndLog(const char* text) {

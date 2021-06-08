@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include "common.h"
+#include "events.h"
 
 enum direction   { horizontal, vertical };
 enum alignement  { left, center, right };
@@ -22,7 +23,7 @@ typedef struct _ViewModel {
     enum vAlignement vAlign;
     // behavior
     bool dragsWindow;
-    void (*onClick)(); 
+    void (*onClick)(Uint32 x, Uint32 y); 
     Uint16 paddingLeft, paddingTop;
     // for internal calculations:
     Uint16 x, y, x2, y2, sumAbsH, sumAbsW, sumRelH, sumRelW;
@@ -62,7 +63,8 @@ ViewModel layout = {
                     .w = 46,"px",
                     .imageId = "close-light", .align = center,
                     .bgColor = &gray4,
-                    .bgHover = &gray6,
+                    .bgHover = &red1,
+                    .onClick = &onClickClose,
                 }
             }
         }, 

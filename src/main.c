@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
     renderHover(windowRenderer, 1500, 20);
 
     bool quit = false;
+    ViewModel* mouseDownAt = NULL;
     while(!quit) {
         SDL_Event e;
         SDL_Delay(10);
@@ -56,6 +57,15 @@ int main(int argc, char *argv[]) {
                 case SDL_WINDOWEVENT:
                     if (e.window.event == SDL_WINDOWEVENT_LEAVE)
                         clearHover(windowRenderer);
+                    break;
+                case SDL_MOUSEBUTTONDOWN: 
+                    mouseDownAt = findRectByXY(&layout, e.button.x, e.button.y);
+                    break;
+                case SDL_MOUSEBUTTONUP: 
+                    if ((e.button.clicks == 1) && (e.button.button == SDL_BUTTON_LEFT) && 
+                        (mouseDownAt == findRectByXY(&layout, e.button.x, e.button.y)))
+                        mouseDownAt->onClick(e.button.x, e.button.y);
+                    break;
             }
         }
 
