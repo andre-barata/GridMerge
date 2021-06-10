@@ -28,11 +28,16 @@ SDL_Color red1      = { 0xe6, 0x0c, 0x28 };
 
 SDL_Window* mainWindow;
 SDL_Renderer* windowRenderer;
-SDL_Texture *bufferTexture;
+enum mainWindowState { winUnknown = 0, winNormal = 1<<0, winMinimized = 1<<1, winMaximized = 1<<2} mainWindowState;
+SDL_Rect mainWindowNormalCoords = {0, 0, 800, 600};
 
 SDL_HitTestResult resizeCallback(SDL_Window* window, const SDL_Point* point, void* data){ 
     return SDL_HITTEST_RESIZE_BOTTOM;
 }
+
+// proto functions
+bool maximizeMainWindow();
+
 
 // initializations
 
@@ -41,7 +46,7 @@ bool initWindow(int* width, int* height) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error initializing SDL! %s\n", SDL_GetError() );
         return false;
     }
-    mainWindow = SDL_CreateWindow("GridMerge", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_RESIZABLE );
+    mainWindow = SDL_CreateWindow("GridMerge", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mainWindowNormalCoords.w, mainWindowNormalCoords.h, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_RESIZABLE );
     if (mainWindow == NULL) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating SDL window! %s\n", SDL_GetError() );
         return false;
@@ -60,38 +65,62 @@ bool initWindow(int* width, int* height) {
     }
 
     // attempt to maximize
+    maximizeMainWindow();
+    SDL_GetWindowSize(mainWindow, width, height);
+
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Continuing from window init... \n" );
+    return true;
+}
+
+// window
+
+bool maximizeMainWindow() {
+    if (mainWindowState & winMaximized) return true;
+    // attempt to maximize main window
     int display_index = SDL_GetWindowDisplayIndex(mainWindow);
     if (display_index < 0) {
         SDL_LogWarn(SDL_LOG_CATEGORY_RENDER, "failed to get default display index %s\n", SDL_GetError() );
+        return false;
     }
     SDL_Rect usable_bounds;
     if (SDL_GetDisplayUsableBounds(display_index, &usable_bounds) != 0) {
         SDL_LogWarn(SDL_LOG_CATEGORY_RENDER, "failed to get display usable bounds %s\n", SDL_GetError() );
+        return false;
     }
     else {
+        // save position and size
+        SDL_GetWindowPosition(mainWindow, &mainWindowNormalCoords.x, &mainWindowNormalCoords.y);
+        SDL_GetWindowSize(mainWindow, &mainWindowNormalCoords.w, &mainWindowNormalCoords.h);
+
         SDL_SetWindowPosition(mainWindow, usable_bounds.x, usable_bounds.y);
         SDL_SetWindowSize(mainWindow, usable_bounds.w, usable_bounds.h);
     }
-    //SDL_SetWindowResizable(mainWindow, SDL_TRUE);
-    //SDL_SetWindowHitTest(mainWindow, resizeCallback, NULL);
-    //SDL_MinimizeWindow(mainWindow);
-    SDL_GetWindowSize(mainWindow, width, height);
-
-    // create a buffer bitmap and a GPU texture from it
-    /*
-    SDL_Surface* buffer = SDL_CreateRGBSurfaceWithFormat(0, *width, *height, 32, SDL_PIXELFORMAT_RGBA32);
-    if (buffer == NULL) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture surface: %s\n", SDL_GetError());
-        return false;
-    }
-	bufferTexture = SDL_CreateTextureFromSurface(windowRenderer, buffer);
-	SDL_FreeSurface(buffer);
-	if ( bufferTexture == NULL ) {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error creating buffer texture: %s\n", SDL_GetError());
-		return false;
-	}
-    */
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Continuing from window init... \n" );
+    // set maximized flag
+    mainWindowState |= winMaximized;
+    // clear normal flag
+    mainWindowState &= ~winNormal;
+    // clear minimized flag
+    mainWindowState &= ~winMinimized;
+    return true;
+}
+bool restoreMainWindow() {
+    if (mainWindowState & winNormal) return true;
+    // restore to the same dimensions as before maximized
+    SDL_SetWindowPosition(mainWindow, mainWindowNormalCoords.x, mainWindowNormalCoords.y);
+    SDL_SetWindowSize(mainWindow, mainWindowNormalCoords.w, mainWindowNormalCoords.h);
+    // set normal flag
+    mainWindowState |= winNormal;
+    // clear maximized flag
+    mainWindowState &= ~winMaximized;
+    // clear minimized flag
+    mainWindowState &= ~winMinimized;
+    return true;
+}
+bool minimizeMainWindow() {
+    if (mainWindowState & winMinimized) return true;
+    SDL_MinimizeWindow(mainWindow);
+    // set minimized flag, keep other flags
+    mainWindowState |= winMinimized;
     return true;
 }
 
@@ -181,8 +210,6 @@ void cleanup() {
     shfree(spriteHashSet);
 
 	TTF_CloseFont(mainFont);
-	SDL_DestroyTexture(bufferTexture);
-	bufferTexture = NULL;
 
     SDL_DestroyRenderer(windowRenderer);
     SDL_DestroyWindow(mainWindow);

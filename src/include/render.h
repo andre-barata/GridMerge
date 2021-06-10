@@ -30,24 +30,24 @@ bool renderLayoutRects(SDL_Renderer* renderer, ViewModel* model) {
 
 bool renderLayoutRect(SDL_Renderer* renderer, ViewModel* model, bool hover) {
     if (model == NULL) return false;
-    if (model->w > 0 && model->h > 0) {
+    if (model->absW > 0 && model->absH > 0) {
         // draw background color
         if (hover && model->bgHover != NULL) {
             if (SDL_SetRenderDrawColor(renderer, model->bgHover->r, model->bgHover->g, model->bgHover->b, 255) != 0) return false;
         } else if (model->bgColor != NULL) 
             if (SDL_SetRenderDrawColor(renderer, model->bgColor->r, model->bgColor->g, model->bgColor->b, 255) != 0) return false;
-        if (SDL_RenderFillRect(renderer, &(SDL_Rect){model->x, model->y, model->w, model->h}) != 0) return false;
+        if (SDL_RenderFillRect(renderer, &(SDL_Rect){model->x, model->y, model->absW, model->absH}) != 0) return false;
         
         if (model->imageId != NULL) {
             // Render alligned Image in the rectangle
             int x, y;
             Sprite s = shget(spriteHashSet, model->imageId);
-            if (model->align == left) x = model->x;
-            else if (model->align == center) x = model->x + (model->w / 2) - (s.parentSet->spriteW / 2); 
-            else if (model->align == right) x = model->x +  model->w - s.parentSet->spriteW; 
-            if (model->vAlign == middle) y = model->y + (model->h / 2) - (s.parentSet->spriteH / 2);
-            else if (model->vAlign == top) y = model->y; 
-            else if (model->vAlign == bottom) x = model->y + model->h - s.parentSet->spriteH; 
+            if (model->align == alignLeft) x = model->x;
+            else if (model->align == alignCenter) x = model->x + (model->absW / 2) - (s.parentSet->spriteW / 2); 
+            else if (model->align == alignRight) x = model->x +  model->absW - s.parentSet->spriteW; 
+            if (model->vAlign == valignMiddle) y = model->y + (model->absH / 2) - (s.parentSet->spriteH / 2);
+            else if (model->vAlign == valignTop) y = model->y; 
+            else if (model->vAlign == valignBottom) x = model->y + model->absH - s.parentSet->spriteH; 
             if (SDL_RenderCopy(renderer, s.parentSet->texture, &(SDL_Rect){s.x, s.y, s.parentSet->spriteW, s.parentSet->spriteH}, 
                 &(SDL_Rect){x, y, s.parentSet->spriteW, s.parentSet->spriteH}) != 0) return false;
         }
@@ -55,15 +55,15 @@ bool renderLayoutRect(SDL_Renderer* renderer, ViewModel* model, bool hover) {
         if (model->innerText != NULL) {
             // Render alligned Inner Text in the rectangle
             int x, y, textWidth, textHeight, calcWidth, glyphs;
-            TTF_MeasureUTF8(mainFont, model->innerText, model->w, &textWidth, &glyphs);
+            TTF_MeasureUTF8(mainFont, model->innerText, model->absW, &textWidth, &glyphs);
             textHeight = TTF_FontHeight(mainFont);
-            if (model->align == left) x = model->x;
-            else if (model->align == center) x = model->x + (model->w / 2) - (textWidth / 2); 
-            else if (model->align == right) x = model->x +  model->w - textWidth; 
-            if (model->vAlign == middle) y = model->y + (model->h / 2) - (textHeight / 2);
-            else if (model->vAlign == top) y = model->y; 
-            else if (model->vAlign == bottom) x = model->y + model->h - textHeight; 
-            if (!drawText(renderer, model->innerText, x, y, model->w, model->h, lightGray)) {
+            if (model->align == alignLeft) x = model->x;
+            else if (model->align == alignCenter) x = model->x + (model->absW / 2) - (textWidth / 2); 
+            else if (model->align == alignRight) x = model->x +  model->absW - textWidth; 
+            if (model->vAlign == valignMiddle) y = model->y + (model->absH / 2) - (textHeight / 2);
+            else if (model->vAlign == valignTop) y = model->y; 
+            else if (model->vAlign == valignBottom) x = model->y + model->absH - textHeight; 
+            if (!drawText(renderer, model->innerText, x, y, model->absW, model->absH, lightGray)) {
                 SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to render text '%s' at X:%d Y:%d\n", model->innerText, x, y);
                 return false;
             }
@@ -75,7 +75,7 @@ bool renderLayoutRect(SDL_Renderer* renderer, ViewModel* model, bool hover) {
 // find a layout rectangle in a binary space partition fashion using XY coords
 ViewModel* findRectByXY(ViewModel* model, Uint32 x, Uint32 y) {
     ViewModel* pChild;
-    if (model->stack == vertical) {
+    if (model->stack == dirVertical) {
         for (int i = 0; i < arrlen(model->childs); i++) {
             pChild = &model->childs[i];
             if (y <= pChild->y2) { // navigates inside the first node with the Y coord or higher - assumes childs sorted by coords

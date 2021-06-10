@@ -27,6 +27,12 @@
         "cstdlib": "cpp",
         "atomic": "cpp",
         "cstdint": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "bit": "cpp",
+        "memory_resource": "cpp",
+        "limits": "cpp",
+        "cmath": "cpp",
+        "iosfwd": "cpp",
+        "functional": "cpp"
     }
 }

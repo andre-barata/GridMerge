@@ -7,7 +7,9 @@
 #include "include/common.h"
 #include "include/font.h"
 #include "include/viewModel.h"
+#define EVENTS_IMPL 
 #include "include/render.h"
+#include "include/events.h"
 
 #include "include/font2.h"
 
@@ -57,14 +59,19 @@ int main(int argc, char *argv[]) {
                 case SDL_WINDOWEVENT:
                     if (e.window.event == SDL_WINDOWEVENT_LEAVE)
                         clearHover(windowRenderer);
+                    if (e.window.event == SDL_WINDOWEVENT_RESTORED)
+                        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "restored \n" );
+                    if (e.window.event == SDL_WINDOWEVENT_MAXIMIZED)
+                        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "maximized \n" );
                     break;
                 case SDL_MOUSEBUTTONDOWN: 
                     mouseDownAt = findRectByXY(&layout, e.button.x, e.button.y);
                     break;
                 case SDL_MOUSEBUTTONUP: 
                     if ((e.button.clicks == 1) && (e.button.button == SDL_BUTTON_LEFT) && 
+                        (mouseDownAt != NULL) && (mouseDownAt->onClick != NULL) &&
                         (mouseDownAt == findRectByXY(&layout, e.button.x, e.button.y)))
-                        mouseDownAt->onClick(e.button.x, e.button.y);
+                            mouseDownAt->onClick(e.button.x, e.button.y, mouseDownAt);
                     break;
             }
         }
