@@ -32,9 +32,8 @@ void onClickRestoreOrMaximize(Uint32 x, Uint32 y, ViewModel* rect) {
     }
     SDL_GetWindowSize(mainWindow, &width, &height);
 
-    if (!computeModel(&layout, 0, 0, width, height)) return;
-    if (renderLayoutRects(windowRenderer, &layout)) SDL_RenderPresent(windowRenderer);
-    else SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not render main layout!\n" );
+    if (!renderUpdatedLayout(windowRenderer, &layout, 0, 0, width, height)) 
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not render main layout!\n" );
 }
 
 void onClickMinimize(Uint32 x, Uint32 y, ViewModel* rect) {

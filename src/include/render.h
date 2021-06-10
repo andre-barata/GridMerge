@@ -12,9 +12,17 @@ bool renderLayoutRect(SDL_Renderer* renderer, ViewModel* model, bool hover);
 bool renderLayoutRects(SDL_Renderer* renderer, ViewModel* model);
 void clearHover(SDL_Renderer* renderer);
 
-bool renderLayout(SDL_Renderer* renderer, int x, int y, int windowWidth, int windowHeight) {
-    if (!loadModel(&layout, x, y, windowWidth, windowHeight)) return false;
-    return renderLayoutRects(renderer, &layout);
+bool renderLayout(SDL_Renderer* renderer, ViewModel* model, int x, int y, int windowWidth, int windowHeight) {
+    if (!loadModel(model, x, y, windowWidth, windowHeight)) return false;
+    if (!renderLayoutRects(renderer, model)) return false;
+    SDL_RenderPresent(renderer);
+    return true;
+}
+bool renderUpdatedLayout(SDL_Renderer* renderer, ViewModel* model, int x, int y, int windowWidth, int windowHeight) {
+    if (!computeModel(model, x, y, windowWidth, windowHeight)) return false;
+    if (!renderLayoutRects(renderer, model)) return false;
+    SDL_RenderPresent(renderer);
+    return true;
 }
 
 bool renderLayoutRects(SDL_Renderer* renderer, ViewModel* model) {
@@ -128,6 +136,8 @@ void clearHover(SDL_Renderer* renderer) {
     // clear hover state bit
     hoverRect->state &= ~hover;
 }
+
+
 
 #endif
 

@@ -23,9 +23,7 @@ int main(int argc, char *argv[]) {
     if (!initWindow(&windowWidth, &windowHeight)) return terminateAndLog("Could not init main window");
     if (!initFont()) return terminateAndLog("Failed to load fonts");
     if (!loadSpriteSets()) return terminateAndLog("Failed to load sprite set");
-    if (!renderLayout(windowRenderer, 0, 0, windowWidth, windowHeight)) return terminateAndLog("Error while rendering the main layout!");
-
-    SDL_RenderPresent(windowRenderer);
+    if (!renderLayout(windowRenderer, &layout, 0, 0, windowWidth, windowHeight)) return terminateAndLog("Error while rendering the main layout!");
 
 	// Start sending SDL_TextInput events
     //SDL_StartTextInput();
