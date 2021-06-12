@@ -106,6 +106,7 @@ ViewModel* findRectByXY(ViewModel* model, Uint32 x, Uint32 y) {
 ViewModel* hoverRect = NULL;
 void renderHover(SDL_Renderer* renderer, Uint32 x, Uint32 y) {
     ViewModel* rect = findRectByXY(&layout, x, y);
+    if (rect == NULL) return;
     // clear any previous hover
     if (rect != hoverRect) clearHover(renderer);
     // skip if rectangle doesn't use hover

@@ -22,7 +22,6 @@ void onClickClose(Uint32 x, Uint32 y, ViewModel* rect) {
 }
 
 void onClickRestoreOrMaximize(Uint32 x, Uint32 y, ViewModel* rect) {
-    int width, height;
     if (mainWindowState & winNormal) {
         maximizeMainWindow();
         rect->imageId = "restore-light";
@@ -30,10 +29,6 @@ void onClickRestoreOrMaximize(Uint32 x, Uint32 y, ViewModel* rect) {
         restoreMainWindow();
         rect->imageId = "maximize-light";
     }
-    SDL_GetWindowSize(mainWindow, &width, &height);
-
-    if (!renderUpdatedLayout(windowRenderer, &layout, 0, 0, width, height)) 
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not render main layout!\n" );
 }
 
 void onClickMinimize(Uint32 x, Uint32 y, ViewModel* rect) {

@@ -57,10 +57,8 @@ int main(int argc, char *argv[]) {
                 case SDL_WINDOWEVENT:
                     if (e.window.event == SDL_WINDOWEVENT_LEAVE)
                         clearHover(windowRenderer);
-                    if (e.window.event == SDL_WINDOWEVENT_RESTORED)
-                        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "restored \n" );
-                    if (e.window.event == SDL_WINDOWEVENT_MAXIMIZED)
-                        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "maximized \n" );
+                    if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                        renderUpdatedLayout(windowRenderer, &layout, 0, 0, e.window.data1, e.window.data2);
                     break;
                 case SDL_MOUSEBUTTONDOWN: 
                     mouseDownAt = findRectByXY(&layout, e.button.x, e.button.y);

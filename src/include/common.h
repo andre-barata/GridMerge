@@ -31,13 +31,9 @@ SDL_Renderer* windowRenderer;
 enum mainWindowState { winUnknown = 0, winNormal = 1<<0, winMinimized = 1<<1, winMaximized = 1<<2} mainWindowState;
 SDL_Rect mainWindowNormalCoords = {0, 0, 800, 600};
 
-SDL_HitTestResult resizeCallback(SDL_Window* window, const SDL_Point* point, void* data){ 
-    return SDL_HITTEST_RESIZE_BOTTOM;
-}
-
 // proto functions
 bool maximizeMainWindow();
-
+SDL_HitTestResult hittestCallback(SDL_Window* window, const SDL_Point* point, void* data);
 
 // initializations
 
@@ -64,13 +60,41 @@ bool initWindow(int* width, int* height) {
         }
     }
 
+    SDL_SetWindowHitTest(mainWindow, hittestCallback, NULL);
+
     // attempt to maximize
     maximizeMainWindow();
     SDL_GetWindowSize(mainWindow, width, height);
 
+    SDL_SetWindowMinimumSize(mainWindow, 320, 240);
+
+    // SDL_WINDOW_RESIZABLE needs to be set again due to SDL bug
+    SDL_SetWindowResizable(mainWindow, SDL_TRUE);
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Continuing from window init... \n" );
     return true;
 }
+
+SDL_HitTestResult hittestCallback(SDL_Window* window, const SDL_Point* point, void* data) { 
+    if (mainWindowState & winMaximized) return 0;
+    unsigned int width, height, vBorderSize = 8, flags = 0;
+    SDL_GetWindowSize(mainWindow, &width, &height);
+
+    if (point->y <= vBorderSize)                    flags |= 0b1000; // top
+    else if (point->y >= height - vBorderSize - 1)  flags |= 0b0100; // bottom
+    if (point->x <= vBorderSize)                    flags |= 0b0010; // left
+    else if (point->x >= width - vBorderSize - 1)   flags |= 0b0001; // right
+    switch (flags) {
+        case 0b1010: return SDL_HITTEST_RESIZE_TOPLEFT;
+        case 0b1001: return SDL_HITTEST_RESIZE_TOPRIGHT;
+        case 0b0110: return SDL_HITTEST_RESIZE_BOTTOMLEFT;
+        case 0b0101: return SDL_HITTEST_RESIZE_BOTTOMRIGHT;
+        case 0b1000: return SDL_HITTEST_RESIZE_TOP;
+        case 0b0100: return SDL_HITTEST_RESIZE_BOTTOM;
+        case 0b0010: return SDL_HITTEST_RESIZE_LEFT;
+        case 0b0001: return SDL_HITTEST_RESIZE_RIGHT;
+    }
+}
+
 
 // window
 
