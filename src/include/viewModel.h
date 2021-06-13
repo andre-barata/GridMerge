@@ -162,6 +162,8 @@ bool loadModelAttributes(ViewModel* parentNode, int x, int y, int parentWidth, i
         // update dynamic node with calculated dimensions
         node->x = x; node->y = y; node->x2 = x + w; node->y2 = y + h; node->absH = h; node->absW = w;
 
+        if (node->dragsWindow) dragRect = (SDL_Rect){x, y, w, h};
+
         //recursivelly navigate to child nodes
         if (!loadModelAttributes(node, x, y, w, h)) return false;
 

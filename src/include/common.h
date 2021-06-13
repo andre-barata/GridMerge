@@ -30,6 +30,7 @@ SDL_Window* mainWindow;
 SDL_Renderer* windowRenderer;
 enum mainWindowState { winUnknown = 0, winNormal = 1<<0, winMinimized = 1<<1, winMaximized = 1<<2} mainWindowState;
 SDL_Rect mainWindowNormalCoords = {0, 0, 800, 600};
+SDL_Rect dragRect = {};
 
 // proto functions
 bool maximizeMainWindow();
@@ -74,9 +75,10 @@ bool initWindow(int* width, int* height) {
     return true;
 }
 
+#define vBorderSize 8
 SDL_HitTestResult hittestCallback(SDL_Window* window, const SDL_Point* point, void* data) { 
     if (mainWindowState & winMaximized) return 0;
-    unsigned int width, height, vBorderSize = 8, flags = 0;
+    unsigned int width, height, flags = 0;
     SDL_GetWindowSize(mainWindow, &width, &height);
 
     if (point->y <= vBorderSize)                    flags |= 0b1000; // top
@@ -93,6 +95,8 @@ SDL_HitTestResult hittestCallback(SDL_Window* window, const SDL_Point* point, vo
         case 0b0010: return SDL_HITTEST_RESIZE_LEFT;
         case 0b0001: return SDL_HITTEST_RESIZE_RIGHT;
     }
+    if (dragRect.w && SDL_PointInRect(point, &dragRect)) return SDL_HITTEST_DRAGGABLE;
+    return SDL_HITTEST_NORMAL;
 }
 
 
