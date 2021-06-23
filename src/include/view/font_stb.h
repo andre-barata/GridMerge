@@ -45,6 +45,7 @@ static Font fonts[] = {
     {.sizeEm = 12},
     {.sizeEm = 14}
 };
+unsigned char gammaCorrection[256];
 
 // Load a font pack into a cache texture, with a specified font size
 // the first half of the texture contains a black background character set, and the second part, it's negative image
@@ -110,19 +111,17 @@ SDL_Texture* loadPackCacheTexture(SDL_Renderer* renderer, const unsigned char* f
     int offsetInvertedTx = txPitch * sampleHeight * cntSamples;
     Uint8* bmpPixels = (Uint8*)packBitmap->pixels;
     Uint8* bmpPixelsEnd = bmpPixels + bmpSize;
-    //#   define gamma 1 /*1.43, 2.22*/
-    //*(txPixels++) = pow(*(ftPixels + 2), 1.0 / gamma) * (256.0 / pow(256, 1.0 / gamma)); // B
     stopwatchStart();
     for (int i = 0; i < cntSamples; i++) {
         while (bmpPixels < bmpPixelsEnd) {
-            *(txPixels++ + offsetInvertedTx) = 0xFF - (*(txPixels) = *(bmpPixels + 2)); // B
-            *(txPixels++ + offsetInvertedTx) = 0xFF - (*(txPixels) = *(bmpPixels + 1)); // G
-            *(txPixels++ + offsetInvertedTx) = 0xFF - (*(txPixels) = *(bmpPixels + 0)); // R
+            *(txPixels++ + offsetInvertedTx) = 0xFF - (*(txPixels) = gammaCorrection[*(bmpPixels + 2)]); // B
+            *(txPixels++ + offsetInvertedTx) = 0xFF - (*(txPixels) = gammaCorrection[*(bmpPixels + 1)]); // G
+            *(txPixels++ + offsetInvertedTx) = 0xFF - (*(txPixels) = gammaCorrection[*(bmpPixels + 0)]); // R
             *(txPixels++ + offsetInvertedTx) =         *(txPixels) = 0xFF; // A
             bmpPixels += 3;
         }
         // move bitmap pointer back to the start, minus 1 for the alignement offset
-        bmpPixels -= bmpSize - 1;
+        bmpPixels -= bmpSize + 1;
     }
     stopwatchStop("Texture loop");
     SDL_UnlockTexture(packTexture);
@@ -132,9 +131,13 @@ SDL_Texture* loadPackCacheTexture(SDL_Renderer* renderer, const unsigned char* f
 
 static int numChars;
 static SDL_Texture* texture;
+#define gamma 2.22 /*1.43, 2.22*/
 
 bool initFont(SDL_Renderer* renderer) {
-    texture = loadPackCacheTexture(renderer, (const unsigned char*)rc_opensans_semibold.start, fonts, sizeof(fonts)/sizeof(fonts[0]), 512, 512, &numChars);
+    // init gamma array
+    for (int i = 0; i < 256; i++) gammaCorrection[i] = pow(i, 1.0 / gamma) * (256.0 / pow(256, 1.0 / gamma));
+    // load font cache textures
+    texture = loadPackCacheTexture(renderer, (const unsigned char*)rc_opensans_regular.start, fonts, sizeof(fonts)/sizeof(fonts[0]), 512, 512, &numChars);
     if (texture == NULL) return false;
     //SDL_RenderCopy(renderer, packTexture, NULL, &(SDL_Rect){ 0, 100, 512, 512*2*3});
     return true;
@@ -188,7 +191,8 @@ bool getTextDimensions(unsigned char* text, int* width, int* height, int sizeEm)
 }
 
 bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int maxW, int maxH, SDL_Color textColor, int sizeEm) {
-    int sx, sy, dx, dy, cpSz, cp, w, h, iSz = -1, xStart = x;
+    int sx, sy, dy, cpSz, cp, w, h, iSz = -1, xStart = x;
+    float dx;
     SDL_Rect packRect, packRectInv, dstRect;
     stbtt_packedchar pc;
     stopwatchStart();
@@ -210,11 +214,11 @@ bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int
 
         w = (pc.x1 - pc.x0) / 3 + 1;
         h = pc.y1 - pc.y0;
-            
         dx = x + pc.xoff;
         dy = y + pc.yoff;
-        sx =          pc.x0 / 3;
-        sy = pc.y0 + (pc.x0 % 3) * 512;
+
+        sy = pc.y0 + (int)(dx * 3) % 3 * 512;
+        sx = pc.x0 / 3;
 
         if (x - xStart > maxW) return true;
 
