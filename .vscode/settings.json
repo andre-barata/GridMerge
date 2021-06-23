@@ -32,6 +32,11 @@
         "functional": "cpp",
         "font.h": "c",
         "viewmodel.h": "c",
-        "font_sdlttf.h": "c"
+        "font_sdlttf.h": "c",
+        "common.h": "c",
+        "stb_truetype.h": "c",
+        "font_stb.h": "c",
+        "stb_rect_pack.h": "c",
+        "concepts": "c"
     }
 }

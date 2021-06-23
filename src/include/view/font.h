@@ -1,5 +1,5 @@
 /*
-  events.h: functions for handling UI events
+  font.h : font library abstraction header
   Copyright (C) 2021 RangeCode, Lda. <info@rangecode.com>
 
   This software is provided 'as-is', without any express or implied
@@ -18,41 +18,13 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#ifndef EVENTS_H
-#define EVENTS_H
+#ifndef FONT_H
+#define FONT_H
 
-#include <SDL.h>
-#include "../common.h"
-
-// proto functions
-void onClickClose(Uint32 x, Uint32 y, ViewModel* rect);
-void onClickRestoreOrMaximize(Uint32 x, Uint32 y, ViewModel* rect);
-void onClickMinimize(Uint32 x, Uint32 y, ViewModel* rect);
-
+#ifdef USE_FREETYPE
+#   include "font_sdlttf.h"
+#else
+#   include "font_stb.h"
 #endif
-#ifdef EVENTS_IMPL
-#ifndef EVENTS_IMPL_H
-#define EVENTS_IMPL_H
-#include "../view/render.h"
-#include "../model/viewModel.h"
 
-void onClickClose(Uint32 x, Uint32 y, ViewModel* rect) {
-    cleanup();
-    exit(0);
-}
-
-void onClickRestoreOrMaximize(Uint32 x, Uint32 y, ViewModel* rect) {
-    if (mainWindowState & winNormal) {
-        maximizeMainWindow();
-        rect->imageId = "restore-light";
-    } else {
-        restoreMainWindow();
-        rect->imageId = "maximize-light";
-    }
-}
-
-void onClickMinimize(Uint32 x, Uint32 y, ViewModel* rect) {
-    minimizeMainWindow();
-}
-#endif
 #endif

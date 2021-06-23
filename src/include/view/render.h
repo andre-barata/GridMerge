@@ -1,3 +1,23 @@
+/*
+  render.h : handles rendering, views and presentation logic
+  Copyright (C) 2021 RangeCode, Lda. <info@rangecode.com>
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
 #ifndef RENDER_H
 #define RENDER_H
 
@@ -63,15 +83,14 @@ bool renderLayoutRect(SDL_Renderer* renderer, ViewModel* model, bool hover) {
         if (model->innerText != NULL) {
             // Render alligned Inner Text in the rectangle
             int x, y, textWidth, textHeight, calcWidth, glyphs;
-            TTF_MeasureUTF8(mainFont, model->innerText, model->absW, &textWidth, &glyphs);
-            textHeight = TTF_FontHeight(mainFont);
+            getTextDimensions(model->innerText, &textWidth, &textHeight, 12);
             if (model->align == alignLeft) x = model->x;
             else if (model->align == alignCenter) x = model->x + (model->absW / 2) - (textWidth / 2); 
             else if (model->align == alignRight) x = model->x +  model->absW - textWidth; 
             if (model->vAlign == valignMiddle) y = model->y + (model->absH / 2) - (textHeight / 2);
             else if (model->vAlign == valignTop) y = model->y; 
             else if (model->vAlign == valignBottom) x = model->y + model->absH - textHeight; 
-            if (!drawText(renderer, model->innerText, x, y, model->absW, model->absH, lightGray)) {
+            if (!drawText(renderer, model->innerText, x, y, model->absW, model->absH, lightGray, 12)) {
                 SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to render text '%s' at X:%d Y:%d\n", model->innerText, x, y);
                 return false;
             }

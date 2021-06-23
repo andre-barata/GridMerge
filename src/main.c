@@ -1,16 +1,35 @@
+/*
+  GridMerge: a light tool for visually analyzing and merging data
+  Copyright (C) 2021 RangeCode, Lda. <info@rangecode.com>
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
+
 #include <string.h>
 #include <stdbool.h>
 //#include <utf8proc.h>
 #include <SDL.h>
 #include "include/res.h"
 #include "include/common.h"
-#include "include/view/font_sdlttf.h"
+#include "include/view/font.h"
 #include "include/model/viewModel.h"
 #define EVENTS_IMPL 
 #include "include/view/render.h"
 #include "include/controller/events.h"
-
-#include "include/view/font_stb.h"
 
 int main(int argc, char *argv[]) {
     int windowWidth, windowHeight, prevLen = 0;
@@ -20,14 +39,13 @@ int main(int argc, char *argv[]) {
     resInit();
 
     if (!initWindow(&windowWidth, &windowHeight)) return terminateAndLog("Could not init main window");
-    if (!initFont()) return terminateAndLog("Failed to load fonts");
+    if (!initFont(windowRenderer)) return terminateAndLog("Failed to load fonts");
     if (!loadSpriteSets()) return terminateAndLog("Failed to load sprite set");
     if (!renderLayout(windowRenderer, &layout, 0, 0, windowWidth, windowHeight)) return terminateAndLog("Error while rendering the main layout!");
 
 	// Start sending SDL_TextInput events
     //SDL_StartTextInput();
-    initFont2(windowRenderer);
-    drawText2(windowRenderer, "The quick brown fox jumps over the lazy dog. À 1ª caça com cão.", 0, 60, 450, 25, white, 12);
+    drawText(windowRenderer, "The quick brown fox jumps over the lazy dog. À 1ª caça com cão.", 0, 60, 450, 25, white, 12);
     SDL_RenderPresent(windowRenderer);
 
     bool quit = false;

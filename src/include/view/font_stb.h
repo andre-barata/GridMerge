@@ -19,8 +19,8 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef FONT2_H
-#define FONT2_H
+#ifndef FONT_STB_H
+#define FONT_STB_H
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -28,11 +28,28 @@
 #include "../common.h"
 #include "../res.h"
 
+#define STB_RECT_PACK_IMPLEMENTATION
+#include "../thirdparty/stb_rect_pack.h"
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "../thirdparty/stb_truetype.h"
+
+
+typedef struct _Font {
+    float sizeEm;
+    float baselineOffsetPx;
+    float fontHeightPx;
+    stbtt_pack_range range;
+    SDL_Texture* texture;
+} Font;
+static Font fonts[] = {
+    {.sizeEm = 12},
+    {.sizeEm = 14}
+};
+
 // Load a font pack into a cache texture, with a specified font size
 // the first half of the texture contains a black background character set, and the second part, it's negative image
 // this is used later for faster GPU based blending
-SDL_Texture* loadPackCacheTexture(SDL_Renderer* renderer, const unsigned char* fontFileData, float fontSizesEm[], int cntFontSizes,
-    int sampleWidth, int sampleHeight, int* numChars, stbtt_pack_range** ranges) {
+SDL_Texture* loadPackCacheTexture(SDL_Renderer* renderer, const unsigned char* fontFileData, Font fontArr[], int cntFontArr, int sampleWidth, int sampleHeight, int* numChars) {
     // sample 3 times wider font, to account for individual R G B channels
     int cntSamples = 3;
     stbtt_pack_context packCtx;
@@ -45,21 +62,26 @@ SDL_Texture* loadPackCacheTexture(SDL_Renderer* renderer, const unsigned char* f
     
     // allocate <numGlyphs> packed chars
     stbtt_fontinfo fontInfo;
+    
     stbtt_InitFont(&fontInfo, fontFileData, stbtt_GetFontOffsetForIndex(fontFileData, 0));
     *numChars = fontInfo.numGlyphs;
     // start the pack, set oversampling
     stbtt_PackBegin(&packCtx, (unsigned char*)packBitmap->pixels, packBitmap->w, packBitmap->h, packBitmap->pitch, cntSamples /* padding is 3: 1 pixel*/, NULL);
     stbtt_PackSetOversampling(&packCtx, cntSamples, 1);
     // add a font range for each specified size and save ranges
-    *ranges = (stbtt_pack_range*)calloc(cntFontSizes, sizeof(stbtt_pack_range));
-    for(int i = 0; i < cntFontSizes; i++) {
+    for(int i = 0; i < cntFontArr; i++) {
+        float ascent, descent, lineGap;
+        stbtt_GetScaledFontVMetrics(fontFileData, 0, -fontArr[i].sizeEm, &ascent, &descent, &lineGap);
+        fontArr[i].fontHeightPx = ascent - descent;
+        fontArr[i].baselineOffsetPx = ascent;
+
         stbtt_packedchar* packChars = (stbtt_packedchar*)malloc(fontInfo.numGlyphs * sizeof(stbtt_packedchar));
-        (*ranges)[i].first_unicode_codepoint_in_range = 0;
-        (*ranges)[i].array_of_unicode_codepoints      = NULL;
-        (*ranges)[i].num_chars                        = *numChars;
-        (*ranges)[i].chardata_for_range               = packChars;
-        (*ranges)[i].font_size                        = -fontSizesEm[i];
-        stbtt_PackFontRanges(&packCtx, fontFileData, 0, &(*ranges)[i], 1);
+        fontArr[i].range.first_unicode_codepoint_in_range = 0;
+        fontArr[i].range.array_of_unicode_codepoints      = NULL;
+        fontArr[i].range.num_chars                        = *numChars;
+        fontArr[i].range.chardata_for_range               = packChars;
+        fontArr[i].range.font_size                        = -fontArr[i].sizeEm;
+        stbtt_PackFontRanges(&packCtx, fontFileData, 0, &fontArr[i].range, 1);
     }
     stbtt_PackEnd(&packCtx);
 
@@ -108,15 +130,12 @@ SDL_Texture* loadPackCacheTexture(SDL_Renderer* renderer, const unsigned char* f
     return packTexture;
 }
 
-int numChars;
-stbtt_pack_range* ranges;
-SDL_Texture* packTexture;
-float fontSizes[] = {12};
-//float fontSizes[] = {8, 9, 10, 12, 14, 18};
+static int numChars;
+static SDL_Texture* texture;
 
-bool initFont2(SDL_Renderer* renderer) {
-    packTexture = loadPackCacheTexture(renderer, (const unsigned char*)rc_opensans_semibold.start, fontSizes, sizeof(fontSizes)/sizeof(fontSizes[0]), 512, 512, &numChars, &ranges);
-    if (packTexture == NULL) return false;
+bool initFont(SDL_Renderer* renderer) {
+    texture = loadPackCacheTexture(renderer, (const unsigned char*)rc_opensans_semibold.start, fonts, sizeof(fonts)/sizeof(fonts[0]), 512, 512, &numChars);
+    if (texture == NULL) return false;
     //SDL_RenderCopy(renderer, packTexture, NULL, &(SDL_Rect){ 0, 100, 512, 512*2*3});
     return true;
 }
@@ -141,18 +160,46 @@ Uint32 getCodepoint(unsigned char* text, int size) {
     return cp;
 }
 
-bool drawText2(SDL_Renderer* renderer, unsigned char* text, float x, float y, int maxW, int maxH, SDL_Color textColor, int sizeEm) {
+bool getTextDimensions(unsigned char* text, int* width, int* height, int sizeEm) {
+    int cpSz, cp, iSz = -1, x = 0;
+    int* ascent; int* descent; int* lineGap;
+    SDL_Rect packRect, packRectInv, dstRect;
+    stbtt_packedchar pc;
+    // find the font range for the specified font size
+    for (int i = 0; i < sizeof(fonts)/sizeof(fonts[0]); i++)
+        if ((int)fonts[i].sizeEm == sizeEm) iSz = i;
+    if (iSz == -1) return false;
+    stbtt_pack_range range = fonts[iSz].range;
+    *height = fonts[iSz].fontHeightPx;
+
+    while (*text) {
+        cpSz = getCodepointSize(text);
+        cp = (cpSz > 1) ? (int)getCodepoint(text, cpSz) : *text;
+
+        if (cp > numChars) cp = ' ';
+        pc = range.chardata_for_range[cp];
+
+        *width = x + pc.xoff + ((pc.x1 - pc.x0) / 3 + 1);
+
+        x += pc.xadvance;
+        text += cpSz;
+    }
+    return true;
+}
+
+bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int maxW, int maxH, SDL_Color textColor, int sizeEm) {
     int sx, sy, dx, dy, cpSz, cp, w, h, iSz = -1, xStart = x;
     SDL_Rect packRect, packRectInv, dstRect;
     stbtt_packedchar pc;
     stopwatchStart();
     // find the font range for the specified font size
-    for (int i = 0; i < sizeof(fontSizes)/sizeof(fontSizes[0]); i++)
-        if ((int)fontSizes[i] == sizeEm) iSz = i;
+    for (int i = 0; i < sizeof(fonts)/sizeof(fonts[0]); i++)
+        if ((int)fonts[i].sizeEm == sizeEm) iSz = i;
     if (iSz == -1) return false;
-    stbtt_pack_range range = ranges[iSz];
+    stbtt_pack_range range = fonts[iSz].range;
+    if (fonts[iSz].fontHeightPx > maxH) return true;
 
-    x += 0.5f; y += 0.5f;
+    x += 0.5f; y = y + fonts[iSz].baselineOffsetPx + 0.5f;
     // render the text
     while (*text) {
         cpSz = getCodepointSize(text);
@@ -175,11 +222,11 @@ bool drawText2(SDL_Renderer* renderer, unsigned char* text, float x, float y, in
         packRectInv = (SDL_Rect){ sx, sy + 512 * 3, w, h};
         dstRect = (SDL_Rect){ dx, dy, w, h};
             
-        SDL_SetTextureBlendMode(packTexture, SDL_BLENDMODE_MOD);
-        SDL_RenderCopy(renderer, packTexture, &packRectInv, &dstRect);
-        SDL_SetTextureColorMod(packTexture, textColor.r, textColor.g, textColor.b);
-        SDL_SetTextureBlendMode(packTexture, SDL_BLENDMODE_ADD);
-        SDL_RenderCopy(renderer, packTexture, &packRect, &dstRect);
+        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_MOD);
+        SDL_RenderCopy(renderer, texture, &packRectInv, &dstRect);
+        SDL_SetTextureColorMod(texture, textColor.r, textColor.g, textColor.b);
+        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_ADD);
+        SDL_RenderCopy(renderer, texture, &packRect, &dstRect);
 
         x += pc.xadvance;
         text += cpSz;
@@ -189,33 +236,5 @@ bool drawText2(SDL_Renderer* renderer, unsigned char* text, float x, float y, in
     return true;
 }
 
-bool getTextDimensions(unsigned char* text, int* width, int* height, int sizeEm) {
-    int cpSz, cp, w, h, iSz = -1, x = 0;
-    SDL_Rect packRect, packRectInv, dstRect;
-    stbtt_packedchar pc;
-    // find the font range for the specified font size
-    for (int i = 0; i < sizeof(fontSizes)/sizeof(fontSizes[0]); i++)
-        if ((int)fontSizes[i] == sizeEm) iSz = i;
-    if (iSz == -1) return false;
-    stbtt_pack_range range = ranges[iSz];
-
-    while (*text) {
-        cpSz = getCodepointSize(text);
-        cp = (cpSz > 1) ? (int)getCodepoint(text, cpSz) : *text;
-
-        if (cp > numChars) cp = ' ';
-        pc = range.chardata_for_range[cp];
-
-        w = (pc.x1 - pc.x0) / 3 + 1;
-            
-        *width = x + pc.xoff + w;
-        if (pc.y1 > *height) *height = pc.y1;
-
-        x += pc.xadvance;
-        text += cpSz;
-    }
-
-    return true;
-}
 
 #endif
