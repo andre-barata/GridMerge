@@ -23,7 +23,7 @@
 #include "SDL_cpuinfo.h"
 #include "SDL_endian.h"
 
-#include "include/SDL_ttf.h"
+#include "SDL_ttf.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H

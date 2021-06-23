@@ -62,7 +62,7 @@ RESDIR = res
 CXFLAGS = $(CX_START) -std=c11 -Wno-unknown-pragmas $(INCLUDES) $(CX_END)
 LDFLAGS = $(LD_START) $(LIBS) $(LD_END)
 
-SRC = $(wildcard $(SRCDIR)/*$(EXT))
+SRC = $(wildcard $(SRCDIR)/*$(EXT)) $(wildcard $(SRCDIR)/include/thirdparty/*$(EXT))
 OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
 RESBIN = $(wildcard res/*.*)
 RES = $(RESBIN:$(RESDIR)/%=$(OBJDIR)/%.o)

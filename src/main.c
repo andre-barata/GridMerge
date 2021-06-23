@@ -2,16 +2,15 @@
 #include <stdbool.h>
 //#include <utf8proc.h>
 #include <SDL.h>
-#include "include/SDL_ttf.h"
 #include "include/res.h"
 #include "include/common.h"
-#include "include/font.h"
-#include "include/viewModel.h"
+#include "include/view/font_sdlttf.h"
+#include "include/model/viewModel.h"
 #define EVENTS_IMPL 
-#include "include/render.h"
-#include "include/events.h"
+#include "include/view/render.h"
+#include "include/controller/events.h"
 
-#include "include/font2.h"
+#include "include/view/font_stb.h"
 
 int main(int argc, char *argv[]) {
     int windowWidth, windowHeight, prevLen = 0;
@@ -27,8 +26,9 @@ int main(int argc, char *argv[]) {
 
 	// Start sending SDL_TextInput events
     //SDL_StartTextInput();
-
-    renderHover(windowRenderer, 1500, 20);
+    initFont2(windowRenderer);
+    drawText2(windowRenderer, "The quick brown fox jumps over the lazy dog. À 1ª caça com cão.", 0, 60, 450, 25, white, 12);
+    SDL_RenderPresent(windowRenderer);
 
     bool quit = false;
     ViewModel* mouseDownAt = NULL;
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
                     if (e.window.event == SDL_WINDOWEVENT_LEAVE)
                         clearHover(windowRenderer);
                     if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-                        renderUpdatedLayout(windowRenderer, &layout, 0, 0, e.window.data1, e.window.data2);
+                        ;//renderUpdatedLayout(windowRenderer, &layout, 0, 0, e.window.data1, e.window.data2);
                     break;
                 case SDL_MOUSEBUTTONDOWN: 
                     mouseDownAt = findRectByXY(&layout, e.button.x, e.button.y);

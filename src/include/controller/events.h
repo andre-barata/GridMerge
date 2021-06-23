@@ -2,7 +2,7 @@
 #define EVENTS_H
 
 #include <SDL.h>
-#include "common.h"
+#include "../common.h"
 
 // proto functions
 void onClickClose(Uint32 x, Uint32 y, ViewModel* rect);
@@ -13,8 +13,8 @@ void onClickMinimize(Uint32 x, Uint32 y, ViewModel* rect);
 #ifdef EVENTS_IMPL
 #ifndef EVENTS_IMPL_H
 #define EVENTS_IMPL_H
-#include "render.h"
-#include "viewModel.h"
+#include "../view/render.h"
+#include "../model/viewModel.h"
 
 void onClickClose(Uint32 x, Uint32 y, ViewModel* rect) {
     cleanup();

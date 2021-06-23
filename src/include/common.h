@@ -4,10 +4,10 @@
 #include <stdbool.h>
 #include <SDL.h>
 #define STB_DS_IMPLEMENTATION
-#include "stb_ds.h"
+#include "thirdparty/stb_ds.h"
 #define STBI_ONLY_PNG
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "thirdparty/stb_image.h"
 
 SDL_Color black     = { 0x00, 0x00, 0x00 };
 SDL_Color gray1     = { 0x1e, 0x1e, 0x1e };
@@ -21,10 +21,12 @@ SDL_Color white     = { 0xff, 0xff, 0xff };
 SDL_Color blue1     = { 0x00, 0x7a, 0xcc };
 SDL_Color red1      = { 0xe6, 0x0c, 0x28 };
 
-#include "font.h"
+#include "view/font_sdlttf.h"
 
+#define STB_RECT_PACK_IMPLEMENTATION
+#include "thirdparty/stb_rect_pack.h"
 #define STB_TRUETYPE_IMPLEMENTATION
-#include "stb_truetype.h"
+#include "thirdparty/stb_truetype.h"
 
 SDL_Window* mainWindow;
 SDL_Renderer* windowRenderer;
@@ -39,7 +41,7 @@ SDL_HitTestResult hittestCallback(SDL_Window* window, const SDL_Point* point, vo
 // initializations
 
 bool initWindow(int* width, int* height) {
-    if( SDL_Init( SDL_INIT_VIDEO ) != 0 ) {
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error initializing SDL! %s\n", SDL_GetError() );
         return false;
     }

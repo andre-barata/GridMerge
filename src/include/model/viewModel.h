@@ -2,7 +2,7 @@
 #define VIEWMODEL_H
 
 #include <SDL.h>
-#include "common.h"
+#include "../common.h"
 
 enum direction   { dirHorizontal, dirVertical };
 enum alignement  { alignLeft, alignCenter, alignRight };
@@ -29,7 +29,7 @@ typedef struct _ViewModel {
     enum { none = 0, hover = 1 << 0 } state;
 } ViewModel;
 
-#include "events.h"
+#include "../controller/events.h"
 
 ViewModel layout = { 
     .stack = dirVertical,
@@ -76,7 +76,9 @@ ViewModel layout = {
             .initialChildCount = 3, .initialChilds = (ViewModel[]){
                 {
                     .w = 45,"%",
-                    .bgColor = &gray1
+                    .bgColor = &gray1,
+                    .innerText = "The quick brown fox jumps over the lazy dog, alçapão à pêna",
+                    .vAlign = valignTop
                 },
                 {
                     .w = 10,"%",

@@ -3,8 +3,8 @@
 
 #include <string.h>
 #include <SDL.h>
-#include "common.h"
-#include "viewModel.h"
+#include "../common.h"
+#include "../model/viewModel.h"
 
 
 // proto functions

@@ -1,9 +1,5 @@
 {
-    "msys.path":"${env:MSYS2PATH}",
-    "terminal.integrated.shell.windows": "d:/dev/msys64/usr/bin/bash.exe",
-    "terminal.integrated.shellArgs.windows": [
-        "--login", "-i"
-    ],
+    "msys.path": "${env:MSYS2PATH}",
     "terminal.integrated.env.windows": {
         "MSYSTEM": "MINGW64",
         "CHERE_INVOKING": "1"
@@ -33,6 +29,9 @@
         "limits": "cpp",
         "cmath": "cpp",
         "iosfwd": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "font.h": "c",
+        "viewmodel.h": "c",
+        "font_sdlttf.h": "c"
     }
 }
