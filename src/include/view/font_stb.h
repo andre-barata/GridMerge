@@ -222,6 +222,7 @@ bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int
         packRectInv = (SDL_Rect){ sx, sy + 512 * 3, w, h};
         dstRect = (SDL_Rect){ dx, dy, w, h};
             
+        SDL_SetTextureColorMod(texture, 255, 255, 255);
         SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_MOD);
         SDL_RenderCopy(renderer, texture, &packRectInv, &dstRect);
         SDL_SetTextureColorMod(texture, textColor.r, textColor.g, textColor.b);
