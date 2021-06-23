@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
                     if (e.window.event == SDL_WINDOWEVENT_LEAVE)
                         clearHover(windowRenderer);
                     if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-                        ;//renderUpdatedLayout(windowRenderer, &layout, 0, 0, e.window.data1, e.window.data2);
+                        renderUpdatedLayout(windowRenderer, &layout, 0, 0, e.window.data1, e.window.data2);
                     break;
                 case SDL_MOUSEBUTTONDOWN: 
                     mouseDownAt = findRectByXY(&layout, e.button.x, e.button.y);
