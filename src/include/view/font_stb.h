@@ -164,7 +164,8 @@ Uint32 getCodepoint(unsigned char* text, int size) {
 }
 
 bool getTextDimensions(unsigned char* text, int* width, int* height, int sizeEm) {
-    int cpSz, cp, iSz = -1, x = 0;
+    float x = 0;
+    int cpSz, cp, iSz = -1;
     int* ascent; int* descent; int* lineGap;
     SDL_Rect packRect, packRectInv, dstRect;
     stbtt_packedchar pc;
@@ -182,7 +183,7 @@ bool getTextDimensions(unsigned char* text, int* width, int* height, int sizeEm)
         if (cp > numChars) cp = ' ';
         pc = range.chardata_for_range[cp];
 
-        *width = x + pc.xoff + ((pc.x1 - pc.x0) / 3 + 1);
+        *width = x + pc.xoff + (pc.x1 - pc.x0) / 3 + 1;
 
         x += pc.xadvance;
         text += cpSz;

@@ -57,10 +57,13 @@ ViewModel layout = {
         {
             .h = 30,"px",
             .stack = dirHorizontal,
-            .initialChildCount = 5, .initialChilds = (ViewModel[]){ // window header
+            .initialChildCount = 6, .initialChilds = (ViewModel[]){ // window header
                 {
                     .w = 60,"px", //TODO: implement menus
                     .innerText = "File...", .align = alignCenter,
+                    .bgColor = &gray4
+                },{
+                    .w = 78,"px",
                     .bgColor = &gray4
                 },
                 {
