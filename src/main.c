@@ -45,8 +45,6 @@ int main(int argc, char *argv[]) {
 
 	// Start sending SDL_TextInput events
     //SDL_StartTextInput();
-    //drawText(windowRenderer, "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||", 0, 40, 450, 25, white, 12);
-    SDL_RenderPresent(windowRenderer);
 
     bool quit = false;
     ViewModel* mouseDownAt = NULL;
