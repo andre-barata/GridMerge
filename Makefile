@@ -21,7 +21,7 @@
 
 ### Project Variables:
 APPNAME = GridMerge
-USE_FREETYPE = n
+USE_FREETYPE = y
 INCLUDES = -I/mingw64/include/SDL2 `pkg-config freetype2 --cflags` 
 LIBS = -LD:/Dev/msys64/mingw64/lib `sdl2-config --cflags --static-libs` \
 	-Wl,--whole-archive -lwinpthread -Wl,--no-whole-archive
@@ -66,7 +66,8 @@ LDFLAGS = $(LD_START) $(LIBS) $(LD_END)
 SRC = $(wildcard $(SRCDIR)/*$(EXT)) 
 ifeq ($(USE_FREETYPE),y)
 	LIBS += $(FREETYPE_LIBS)
-	CXFLAGS += -DUSE_FREETYPE
+	CXFLAGS += -DUSE_FREETYPE 
+#-msse -msse2 -msse3 -mfpmath=sse
 	SRC += $(wildcard $(SRCDIR)/include/thirdparty/*$(EXT))
 endif
 OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)

@@ -90,7 +90,7 @@ bool renderLayoutRect(SDL_Renderer* renderer, ViewModel* model, bool hover) {
             if (model->vAlign == valignMiddle) y = model->y + (model->absH / 2) - (textHeight / 2);
             else if (model->vAlign == valignTop) y = model->y; 
             else if (model->vAlign == valignBottom) x = model->y + model->absH - textHeight; 
-            if (!drawText(renderer, model->innerText, x, y, model->absW, model->absH, lightGray, 12)) {
+            if (!drawText(renderer, model->innerText, x, y, model->absW, model->absH, lightGray, *model->bgColor, 12)) {
                 SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to render text '%s' at X:%d Y:%d\n", model->innerText, x, y);
                 return false;
             }

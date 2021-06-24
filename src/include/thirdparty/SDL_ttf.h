@@ -139,7 +139,6 @@ extern DECLSPEC void SDLCALL TTF_SetFontOutline(TTF_Font *font, int outline);
 #define TTF_HINTING_MONO            2
 #define TTF_HINTING_NONE            3
 #define TTF_HINTING_LIGHT_SUBPIXEL  4
-#define TTF_HINTING_LCD_SUBPIXEL    5
 extern DECLSPEC int SDLCALL TTF_GetFontHinting(const TTF_Font *font);
 extern DECLSPEC void SDLCALL TTF_SetFontHinting(TTF_Font *font, int hinting);
 
@@ -317,6 +316,42 @@ extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderGlyph_Blended(TTF_Font *font,
                         Uint16 ch, SDL_Color fg);
 extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderGlyph32_Blended(TTF_Font *font,
                         Uint32 ch, SDL_Color fg);
+
+/* Create a 32-bit surface (SDL_PIXELFORMAT_ARGB8888) and render the given text
+   using FreeType LCD rendering, with the given font and colors.
+   This function returns the new surface, or NULL if there was an error.
+*/
+extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderText_LCD(TTF_Font *font,
+                const char *text, SDL_Color fg, SDL_Color bg);
+extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderUTF8_LCD(TTF_Font *font,
+                const char *text, SDL_Color fg, SDL_Color bg);
+extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderUNICODE_LCD(TTF_Font *font,
+                const Uint16 *text, SDL_Color fg, SDL_Color bg);
+
+/* Create a 32-bit surface (SDL_PIXELFORMAT_ARGB8888) and render the given text
+   using FreeType LCD rendering, with the given font and colors.
+   Text is wrapped to multiple lines on line endings and on word boundaries
+   if it extends beyond wrapLength in pixels.
+   This function returns the new surface, or NULL if there was an error.
+*/
+extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderText_LCD_Wrapped(TTF_Font *font,
+                const char *text, SDL_Color fg, SDL_Color bg, Uint32 wrapLength);
+extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderUTF8_LCD_Wrapped(TTF_Font *font,
+                const char *text, SDL_Color fg, SDL_Color bg, Uint32 wrapLength);
+extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderUNICODE_LCD_Wrapped(TTF_Font *font,
+                const Uint16 *text, SDL_Color fg, SDL_Color bg, Uint32 wrapLength);
+
+/* Create a 32-bit surface (SDL_PIXELFORMAT_ARGB8888) and render the given text
+   using FreeType LCD rendering, with the given font and colors.
+   The glyph is rendered without any padding or centering in the X
+   direction, and aligned normally in the Y direction.
+   This function returns the new surface, or NULL if there was an error.
+*/
+extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderGlyph_LCD(TTF_Font *font,
+                Uint16 ch, SDL_Color fg, SDL_Color bg);
+extern DECLSPEC SDL_Surface * SDLCALL TTF_RenderGlyph32_LCD(TTF_Font *font,
+                Uint32 ch, SDL_Color fg, SDL_Color bg);
+
 
 /* For compatibility with previous versions, here are the old functions */
 #define TTF_RenderText(font, text, fg, bg)  \

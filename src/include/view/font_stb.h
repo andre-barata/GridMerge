@@ -131,7 +131,7 @@ SDL_Texture* loadPackCacheTexture(SDL_Renderer* renderer, const unsigned char* f
 
 static int numChars;
 static SDL_Texture* texture;
-#define gamma 2.22 /*1.43, 2.22*/
+#define gamma 1.8 /*1.43, 2.22*/
 
 bool initFont(SDL_Renderer* renderer) {
     // init gamma array
@@ -191,7 +191,7 @@ bool getTextDimensions(unsigned char* text, int* width, int* height, int sizeEm)
     return true;
 }
 
-bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int maxW, int maxH, SDL_Color textColor, int sizeEm) {
+bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int maxW, int maxH, SDL_Color textColor, SDL_Color bgColor, int sizeEm) {
     int sx, sy, dy, cpSz, cp, w, h, iSz = -1, xStart = x;
     float dx;
     SDL_Rect packRect, packRectInv, dstRect;
