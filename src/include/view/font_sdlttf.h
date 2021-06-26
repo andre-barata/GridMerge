@@ -1,6 +1,7 @@
 /*
   font_sdlttf.h: A library for loading and rendering fonts with SDL_TTF and SDL2
   Copyright (C) 2021 RangeCode, Lda. <info@rangecode.com>
+  https://www.rangecode.com
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -40,6 +41,7 @@ bool initFont(SDL_Renderer* renderer) {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Error loading font: %s\n", SDL_GetError() );
 		return false;
 	}
+    //TTF_SetFontHinting(mainFont, TTF_HINTING_LIGHT_SUBPIXEL);
 
     return true;
 }

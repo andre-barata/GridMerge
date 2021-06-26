@@ -1,6 +1,7 @@
 /*
   viewModel.h : defines and handles a Model that is used for presentation
   Copyright (C) 2021 RangeCode, Lda. <info@rangecode.com>
+  https://www.rangecode.com
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages

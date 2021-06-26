@@ -1,6 +1,7 @@
 /*
   res.h : embedded resource macros and file list
   Copyright (C) 2021 RangeCode, Lda. <info@rangecode.com>
+  https://www.rangecode.com
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages

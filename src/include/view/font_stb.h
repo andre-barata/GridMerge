@@ -1,6 +1,7 @@
 /*
   font_stb.h: A library for loading and rendering fonts with stb_truetype and SDL2
   Copyright (C) 2021 RangeCode, Lda. <info@rangecode.com>
+  https://www.rangecode.com
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -43,9 +44,9 @@ typedef struct _Font {
 } Font;
 static Font fonts[] = {
     {.sizeEm = 12},
-    {.sizeEm = 14}
 };
 unsigned char gammaCorrection[256];
+#define textureSize 512
 
 // Load a font pack into a cache texture, with a specified font size
 // the first half of the texture contains a black background character set, and the second part, it's negative image
@@ -114,10 +115,10 @@ SDL_Texture* loadPackCacheTexture(SDL_Renderer* renderer, const unsigned char* f
     stopwatchStart();
     for (int i = 0; i < cntSamples; i++) {
         while (bmpPixels < bmpPixelsEnd) {
-            *(txPixels++ + offsetInvertedTx) = 0xFF - (*(txPixels) = gammaCorrection[*(bmpPixels + 2)]); // B
-            *(txPixels++ + offsetInvertedTx) = 0xFF - (*(txPixels) = gammaCorrection[*(bmpPixels + 1)]); // G
-            *(txPixels++ + offsetInvertedTx) = 0xFF - (*(txPixels) = gammaCorrection[*(bmpPixels + 0)]); // R
-            *(txPixels++ + offsetInvertedTx) =         *(txPixels) = 0xFF; // A
+            *(txPixels++ + offsetInvertedTx) = 0xFF - (*txPixels = gammaCorrection[*(bmpPixels + 2)]); // B
+            *(txPixels++ + offsetInvertedTx) = 0xFF - (*txPixels = gammaCorrection[*(bmpPixels + 1)]); // G
+            *(txPixels++ + offsetInvertedTx) = 0xFF - (*txPixels = gammaCorrection[*(bmpPixels + 0)]); // R
+            *(txPixels++ + offsetInvertedTx) =         *txPixels = 0xFF; // A
             bmpPixels += 3;
         }
         // move bitmap pointer back to the start, minus 1 for the alignement offset
@@ -137,9 +138,9 @@ bool initFont(SDL_Renderer* renderer) {
     // init gamma array
     for (int i = 0; i < 256; i++) gammaCorrection[i] = pow(i, 1.0 / gamma) * (256.0 / pow(256, 1.0 / gamma));
     // load font cache textures
-    texture = loadPackCacheTexture(renderer, (const unsigned char*)rc_opensans_regular.start, fonts, sizeof(fonts)/sizeof(fonts[0]), 512, 512, &numChars);
+    texture = loadPackCacheTexture(renderer, (const unsigned char*)rc_opensans_regular.start, fonts, sizeof(fonts)/sizeof(fonts[0]), textureSize, textureSize, &numChars);
     if (texture == NULL) return false;
-    //SDL_RenderCopy(renderer, packTexture, NULL, &(SDL_Rect){ 0, 100, 512, 512*2*3});
+    SDL_RenderCopy(renderer, texture, NULL, &(SDL_Rect){ 0, 100, textureSize, textureSize*2*3});
     return true;
 }
 
@@ -196,7 +197,7 @@ bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int
     float dx;
     SDL_Rect packRect, packRectInv, dstRect;
     stbtt_packedchar pc;
-    stopwatchStart();
+    //stopwatchStart();
     // find the font range for the specified font size
     for (int i = 0; i < sizeof(fonts)/sizeof(fonts[0]); i++)
         if ((int)fonts[i].sizeEm == sizeEm) iSz = i;
@@ -218,13 +219,13 @@ bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int
         dx = x + pc.xoff;
         dy = y + pc.yoff;
 
-        sy = pc.y0 + (int)(dx * 3) % 3 * 512;
+        sy = pc.y0 + (int)(dx * 3) % 3 * textureSize;
         sx = pc.x0 / 3;
 
         if (x - xStart > maxW) return true;
 
         packRect = (SDL_Rect){ sx, sy, w, h};
-        packRectInv = (SDL_Rect){ sx, sy + 512 * 3, w, h};
+        packRectInv = (SDL_Rect){ sx, sy + textureSize * 3, w, h};
         dstRect = (SDL_Rect){ dx, dy, w, h};
             
         SDL_SetTextureColorMod(texture, 255, 255, 255);
@@ -237,7 +238,7 @@ bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int
         x += pc.xadvance;
         text += cpSz;
     }
-    stopwatchStop("text loop");
+    //stopwatchStop("text loop");
 
     return true;
 }

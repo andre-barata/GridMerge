@@ -21,7 +21,7 @@
 
 ### Project Variables:
 APPNAME = GridMerge
-USE_FREETYPE = y
+USE_FREETYPE = n
 INCLUDES = -I/mingw64/include/SDL2 `pkg-config freetype2 --cflags` 
 LIBS = -LD:/Dev/msys64/mingw64/lib `sdl2-config --cflags --static-libs` \
 	-Wl,--whole-archive -lwinpthread -Wl,--no-whole-archive

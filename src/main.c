@@ -1,6 +1,7 @@
 /*
   GridMerge: a light tool for visually analyzing and merging data
   Copyright (C) 2021 RangeCode, Lda. <info@rangecode.com>
+  https://www.rangecode.com
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -45,7 +46,20 @@ int main(int argc, char *argv[]) {
 
 	// Start sending SDL_TextInput events
     //SDL_StartTextInput();
-
+    /*SDL_RenderClear(windowRenderer);
+    stopwatchStart();
+    //drawText(windowRenderer, "!\\\"#$\%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}", 0, 70, 800, 25, white, gray4, 12);
+    drawText(windowRenderer, "De várias conversas a que temos a oportunidade de assistir e participar, em alguma altura pode sempre surgir um termo de comparação misturado com competitividade.", 0, 95, 800, 25, white, gray4, 12);
+    drawText(windowRenderer, "Marte é um objetivo para as potências mundiais. Na verdade, sendo aquele planeta deserto, inóspito e sem evidências claras de poder ser um segundo lar para os seres humanos, porquê tanto interesse?", 0, 120, 800, 25, white, gray4, 12);
+    drawText(windowRenderer, "A NASA tem uma abordagem igualmente ambiciosa, diz que antes de 2030 não será viável, mas a China acredita que será o país o primeiro a conseguir esta missão tripulada ao planeta.", 0, 145, 800, 25, white, gray4, 12);
+    drawText(windowRenderer, "A Google lançou a versão Beta do Android 12 há poucas semanas dirigido ao grupo de testes que vai ajustar todos os seus pormenores até se chegar a uma versão final dirigida ao público em geral, que deverá acontecer em finais de agosto. ", 0, 170, 800, 25, white, gray4, 12);
+    drawText(windowRenderer, "Além dos smartphones da Google, existem mais marcas associadas ao programa Android 12 Developer, mas a Samsung não é uma delas.", 0, 195, 800, 25, white, gray4, 12);
+    drawText(windowRenderer, "Contudo, a empresa sul-coreana que se juntou à Google numa fusão entre o Wear OS e o Tizen para smartwatches, poderá surpreender os seus utilizadores com o Android 12 e a One UI 4.0 mais cedo do que se esperava.", 0, 220, 800, 25, white, gray4, 12);
+    drawText(windowRenderer, "De todas as operadoras, a NOWO é a que apresente mensalidade mais baixa para oito serviços/ofertas. A MEO diminui mensalidade de um serviço e a NOS e Vodafone aumentam mensalidades.", 0, 245, 800, 25, white, gray4, 12);
+    drawText(windowRenderer, "Neste mundo cada vez mais digital, está difícil ser garantida a privacidade dos utilizadores. Mesmo com o Regulamento Geral de Proteção de Dados (RGPD) em vigor desde 2018 no nosso país, os casos relacionados com partilha de dados têm acontecido sucessivamente.", 0, 270, 800, 25, white, gray4, 12);
+    stopwatchStop("text render");
+    SDL_RenderPresent(windowRenderer);
+*/
     bool quit = false;
     ViewModel* mouseDownAt = NULL;
     while(!quit) {

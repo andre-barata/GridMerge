@@ -1206,7 +1206,8 @@ BUILD_RENDER_LINE(SSE_Solid             , 0, 0, 0, BITMAP, 0     ,              
 BUILD_RENDER_LINE(SSE_Shaded_SP         , 0, 0, 0, PIXMAP, SUBPIX,                       ,                , BG_SSE     )
 BUILD_RENDER_LINE(SSE_Blended_SP        , 1, 0, 0,  COLOR, SUBPIX,                       , BG_Blended_SSE ,            )
 BUILD_RENDER_LINE(SSE_Blended_Opaque_SP , 1, 1, 0,  COLOR, SUBPIX, BG_Blended_Opaque_SSE ,                ,            )
-BUILD_RENDER_LINE(SSE_LCD               , 0, 0, 1,    LCD, SUBPIX,                       ,                ,            )
+BUILD_RENDER_LINE(SSE_LCD               , 0, 0, 1,    LCD, 0,                            ,                ,            )
+BUILD_RENDER_LINE(SSE_LCD_SP            , 0, 0, 1,    LCD, SUBPIX,                       ,                ,            )
 #endif
 
 #if defined(HAVE_NEON_INTRINSICS)
@@ -1217,7 +1218,8 @@ BUILD_RENDER_LINE(NEON_Solid            , 0, 0, 0, BITMAP, 0     ,              
 BUILD_RENDER_LINE(NEON_Shaded_SP        , 0, 0, 0, PIXMAP, SUBPIX,                       ,                , BG_NEON    )
 BUILD_RENDER_LINE(NEON_Blended_SP       , 1, 0, 0,  COLOR, SUBPIX,                       , BG_Blended_NEON,            )
 BUILD_RENDER_LINE(NEON_Blended_Opaque_SP, 1, 1, 0,  COLOR, SUBPIX, BG_Blended_Opaque_NEON,                ,            )
-BUILD_RENDER_LINE(NEON_LCD              , 0, 0, 1,    LCD, SUBPIX,                       ,                ,            )
+BUILD_RENDER_LINE(NEON_LCD              , 0, 0, 1,    LCD, 0     ,                       ,                ,            )
+BUILD_RENDER_LINE(NEON_LCD_SP           , 0, 0, 1,    LCD, SUBPIX,                       ,                ,            )
 #endif
 
 #if defined(HAVE_BLIT_GLYPH_64)
@@ -1228,7 +1230,8 @@ BUILD_RENDER_LINE(64_Solid              , 0, 0, 0, BITMAP, 0     ,              
 BUILD_RENDER_LINE(64_Shaded_SP          , 0, 0, 0, PIXMAP, SUBPIX,                       ,                , BG_64      )
 BUILD_RENDER_LINE(64_Blended_SP         , 1, 0, 0,  COLOR, SUBPIX,                       , BG_Blended_32  ,            )
 BUILD_RENDER_LINE(64_Blended_Opaque_SP  , 1, 1, 0,  COLOR, SUBPIX, BG_Blended_Opaque_32  ,                ,            )
-BUILD_RENDER_LINE(64_LCD                , 0, 0, 1,    LCD, SUBPIX,                       ,                ,            )
+BUILD_RENDER_LINE(64_LCD                , 0, 0, 1,    LCD, 0     ,                       ,                ,            )
+BUILD_RENDER_LINE(64_LCD_SP             , 0, 0, 1,    LCD, SUBPIX,                       ,                ,            )
 #elif defined(HAVE_BLIT_GLYPH_32)
 BUILD_RENDER_LINE(32_Shaded             , 0, 0, 0, PIXMAP, 0     ,                       ,                , BG_32      )
 BUILD_RENDER_LINE(32_Blended            , 1, 0, 0,  COLOR, 0     ,                       , BG_Blended_32  ,            )
@@ -1237,7 +1240,8 @@ BUILD_RENDER_LINE(32_Solid              , 0, 0, 0, BITMAP, 0     ,              
 BUILD_RENDER_LINE(32_Shaded_SP          , 0, 0, 0, PIXMAP, SUBPIX,                       ,                , BG_32      )
 BUILD_RENDER_LINE(32_Blended_SP         , 1, 0, 0,  COLOR, SUBPIX,                       , BG_Blended_32  ,            )
 BUILD_RENDER_LINE(32_Blended_Opaque_SP  , 1, 1, 0,  COLOR, SUBPIX, BG_Blended_Opaque_32  ,                ,            )
-BUILD_RENDER_LINE(32_LCD                , 0, 0, 1,    LCD, SUBPIX,                       ,                ,            )
+BUILD_RENDER_LINE(32_LCD                , 0, 0, 1,    LCD, 0     ,                       ,                ,            )
+BUILD_RENDER_LINE(32_LCD_SP             , 0, 0, 1,    LCD, SUBPIX,                       ,                ,            )
 #else
 BUILD_RENDER_LINE(8_Shaded              , 0, 0, 0, PIXMAP, 0     ,                       ,                , BG         )
 BUILD_RENDER_LINE(8_Blended             , 1, 0, 0,  COLOR, 0     ,                       , BG_Blended     ,            )
@@ -1246,7 +1250,8 @@ BUILD_RENDER_LINE(8_Solid               , 0, 0, 0, BITMAP, 0     ,              
 BUILD_RENDER_LINE(8_Shaded_SP           , 0, 0, 0, PIXMAP, SUBPIX,                       ,                , BG         )
 BUILD_RENDER_LINE(8_Blended_SP          , 1, 0, 0,  COLOR, SUBPIX,                       , BG_Blended     ,            )
 BUILD_RENDER_LINE(8_Blended_Opaque_SP   , 1, 1, 0,  COLOR, SUBPIX, BG_Blended_Opaque     ,                ,            )
-BUILD_RENDER_LINE(8_LCD                 , 0, 0, 1,    LCD, SUBPIX,                       ,                ,            )
+BUILD_RENDER_LINE(8_LCD                 , 0, 0, 1,    LCD, 0     ,                       ,                ,            )
+BUILD_RENDER_LINE(8_LCD_SP              , 0, 0, 1,    LCD, SUBPIX,                       ,                ,            )
 #endif
 
 
@@ -1259,6 +1264,7 @@ int (*Render_Line_SDF_Shaded_SP)() = NULL;
 BUILD_RENDER_LINE(SDF_Blended_SP        , 1, 0, 0,  COLOR, SUBPIX,                       , BG_Blended_SDF ,            )
 BUILD_RENDER_LINE(SDF_Blended_Opaque_SP , 1, 1, 0,  COLOR, SUBPIX, BG_Blended_Opaque_SDF ,                ,            )
 int (*Render_Line_SDF_LCD)() = NULL;
+int (*Render_Line_SDF_LCD_SP)() = NULL;
 #endif
 
 #ifdef __GNUC__
@@ -1295,7 +1301,11 @@ static SDL_INLINE int Render_Line(const render_mode_t render_mode, int subpixel,
                 }                                                                                           \
             }                                                                                               \
         } else if (render_mode == RENDER_LCD) {                                                             \
-            return Render_Line_##NAME##_LCD(font, textbuf, xstart, ystart, &fg);                            \
+            if (subpixel == 0) {                                                                            \
+                return Render_Line_##NAME##_LCD(font, textbuf, xstart, ystart, &fg);                        \
+            } else {                                                                                        \
+                return Render_Line_##NAME##_LCD_SP(font, textbuf, xstart, ystart, &fg);                     \
+            }                                                                                               \
         } else {                                                                                            \
             return Render_Line_##NAME##_Solid(font, textbuf, xstart, ystart, NULL);                         \
         }
