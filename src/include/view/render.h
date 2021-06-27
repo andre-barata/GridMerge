@@ -83,15 +83,15 @@ bool renderLayoutRect(SDL_Renderer* renderer, ViewModel* model, bool hover) {
 
         if (model->innerText != NULL) {
             // Render alligned Inner Text in the rectangle
-            int x, y, textWidth, textHeight, calcWidth, glyphs;
-            getTextDimensions(model->innerText, &textWidth, &textHeight, 12);
+            int x, y, textWidth, textHeight, calcWidth, glyphs, fontSize = (model->fontSize == 0) ? 12 : model->fontSize;
+            getTextDimensions(model->innerText, &textWidth, &textHeight, fontSize);
             if (model->align == alignLeft) x = model->x;
             else if (model->align == alignCenter) x = model->x + (model->absW / 2) - (textWidth / 2); 
             else if (model->align == alignRight) x = model->x +  model->absW - textWidth; 
             if (model->vAlign == valignMiddle) y = model->y + (model->absH / 2) - (textHeight / 2);
             else if (model->vAlign == valignTop) y = model->y; 
             else if (model->vAlign == valignBottom) x = model->y + model->absH - textHeight; 
-            if (!drawText(renderer, model->innerText, x, y, model->absW, model->absH, lightGray, *model->bgColor, 12)) {
+            if (!drawText(renderer, model->innerText, x, y, model->absW, model->absH, lightGray, *model->bgColor, fontSize)) {
                 SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to render text '%s' at X:%d Y:%d\n", model->innerText, x, y);
                 return false;
             }

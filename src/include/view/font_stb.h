@@ -43,10 +43,21 @@ typedef struct _Font {
     SDL_Texture* texture;
 } Font;
 static Font fonts[] = {
+    {.sizeEm = 8},
+    {.sizeEm = 9},
+    {.sizeEm = 10},
+    {.sizeEm = 11},
     {.sizeEm = 12},
+    {.sizeEm = 14},
+    {.sizeEm = 16},
+    {.sizeEm = 18},
+    {.sizeEm = 20},
+    {.sizeEm = 22},
+    {.sizeEm = 26},
+    {.sizeEm = 30},
 };
 unsigned char gammaCorrection[256];
-#define textureSize 512
+#define textureSize 1024
 
 // Load a font pack into a cache texture, with a specified font size
 // the first half of the texture contains a black background character set, and the second part, it's negative image
@@ -140,7 +151,7 @@ bool initFont(SDL_Renderer* renderer) {
     // load font cache textures
     texture = loadPackCacheTexture(renderer, (const unsigned char*)rc_opensans_regular.start, fonts, sizeof(fonts)/sizeof(fonts[0]), textureSize, textureSize, &numChars);
     if (texture == NULL) return false;
-    SDL_RenderCopy(renderer, texture, NULL, &(SDL_Rect){ 0, 100, textureSize, textureSize*2*3});
+    //SDL_RenderCopy(renderer, texture, NULL, &(SDL_Rect){ 0, 100, textureSize, textureSize*2*3});
     return true;
 }
 
@@ -197,7 +208,7 @@ bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int
     float dx;
     SDL_Rect packRect, packRectInv, dstRect;
     stbtt_packedchar pc;
-    //stopwatchStart();
+    stopwatchStart();
     // find the font range for the specified font size
     for (int i = 0; i < sizeof(fonts)/sizeof(fonts[0]); i++)
         if ((int)fonts[i].sizeEm == sizeEm) iSz = i;
@@ -238,7 +249,7 @@ bool drawText(SDL_Renderer* renderer, unsigned char* text, float x, float y, int
         x += pc.xadvance;
         text += cpSz;
     }
-    //stopwatchStop("text loop");
+    stopwatchStop("text loop");
 
     return true;
 }

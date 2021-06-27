@@ -46,8 +46,8 @@ int main(int argc, char *argv[]) {
 
 	// Start sending SDL_TextInput events
     //SDL_StartTextInput();
-    /*SDL_RenderClear(windowRenderer);
-    stopwatchStart();
+    //SDL_RenderClear(windowRenderer);
+    /*stopwatchStart();
     //drawText(windowRenderer, "!\\\"#$\%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}", 0, 70, 800, 25, white, gray4, 12);
     drawText(windowRenderer, "De várias conversas a que temos a oportunidade de assistir e participar, em alguma altura pode sempre surgir um termo de comparação misturado com competitividade.", 0, 95, 800, 25, white, gray4, 12);
     drawText(windowRenderer, "Marte é um objetivo para as potências mundiais. Na verdade, sendo aquele planeta deserto, inóspito e sem evidências claras de poder ser um segundo lar para os seres humanos, porquê tanto interesse?", 0, 120, 800, 25, white, gray4, 12);

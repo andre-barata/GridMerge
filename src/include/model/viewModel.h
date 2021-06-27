@@ -38,6 +38,7 @@ typedef struct _ViewModel {
     struct _ViewModel *childs;
     char* id;
     char* innerText;
+    Uint8 fontSize;
     char* imageId;
     enum alignement align;
     enum vAlignement vAlign;
@@ -62,7 +63,8 @@ ViewModel layout = {
                 {
                     .w = 60,"px", //TODO: implement menus
                     .innerText = "File...", .align = alignCenter,
-                    .bgColor = &gray4
+                    .bgColor = &gray4,
+                    .fontSize = 12
                 },{
                     .w = 78,"px",
                     .bgColor = &gray4
@@ -70,7 +72,8 @@ ViewModel layout = {
                 {
                     .bgColor = &gray4,
                     .innerText = "GridMerge v0.1", .align = alignCenter,
-                    .dragsWindow = true
+                    .dragsWindow = true,
+                    .fontSize = 12
                 },
                 {
                     .w = 46,"px",
@@ -102,7 +105,8 @@ ViewModel layout = {
                     .w = 45,"%",
                     .bgColor = &gray1,
                     .innerText = "The quick brown fox jumps over the lazy dog. À 1ª caça com cão.",
-                    .vAlign = valignTop
+                    .vAlign = valignTop,
+                    .fontSize = 16
                 },
                 {
                     .w = 10,"%",
