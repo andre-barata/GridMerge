@@ -31,6 +31,7 @@
 #define EVENTS_IMPL 
 #include "include/view/render.h"
 #include "include/controller/events.h"
+#include "include/view/gridView.h"
 
 int main(int argc, char *argv[]) {
     int windowWidth, windowHeight, prevLen = 0;
@@ -60,6 +61,10 @@ int main(int argc, char *argv[]) {
     stopwatchStop("text render");
     SDL_RenderPresent(windowRenderer);
 */
+    loadGrid("d:\\dev\\excel\\allocation1.xlsx");
+    ViewModel* gridHolder = getModelById("lGrid");
+    renderGrid(windowRenderer, gridHolder->x, gridHolder->y, gridHolder->w, gridHolder->h);
+
     bool quit = false;
     ViewModel* mouseDownAt = NULL;
     while(!quit) {

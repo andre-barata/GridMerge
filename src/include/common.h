@@ -266,6 +266,13 @@ int terminateAndLog(const char* text) {
     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "%s :: %s\n", text, SDL_GetError());
     terminate();
 }
+bool falseAndLog(const char* text, ...) {
+    va_list argptr;
+    va_start(argptr, text);
+    vfprintf(stdout, text, argptr);
+    va_end(argptr);
+    return false;
+}
 
 
 #endif

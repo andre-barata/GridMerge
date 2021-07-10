@@ -22,9 +22,10 @@
 ### Project Variables:
 APPNAME = GridMerge
 USE_FREETYPE = n
-INCLUDES = -I/mingw64/include/SDL2 `pkg-config freetype2 --cflags` 
-LIBS = -LD:/Dev/msys64/mingw64/lib `sdl2-config --cflags --static-libs` \
+INCLUDES = -I/mingw64/include/SDL2 `pkg-config freetype2 --cflags`
+LIBS = -LD:/Dev/msys64/mingw64/lib `sdl2-config --cflags --static-libs` -lz \
 	-Wl,--whole-archive -lwinpthread -Wl,--no-whole-archive
+#-lexpat -lz -lzip 
 FREETYPE_LIBS = -lz -lbz2 -lpng16 -lz -lharfbuzz -lm -lusp10 -lgdi32 -lrpcrt4 -ldwrite \
 	-lglib-2.0 -lintl -lws2_32 -lole32 -lwinmm -lshlwapi -pthread -lm -lpcre -lbrotlidec-static \
 	-lbrotlicommon-static -lgraphite2 -lfreetype -lstdc++ 
@@ -62,14 +63,20 @@ RESDIR = res
 
 CXFLAGS = $(CX_START) -std=c11 -Wno-unknown-pragmas $(INCLUDES) $(CX_END)
 LDFLAGS = $(LD_START) $(LIBS) $(LD_END)
-
 SRC = $(wildcard $(SRCDIR)/*$(EXT)) 
+
+# freetype
 ifeq ($(USE_FREETYPE),y)
 	LIBS += $(FREETYPE_LIBS)
 	CXFLAGS += -DUSE_FREETYPE 
 #-msse -msse2 -msse3 -mfpmath=sse
 	SRC += $(wildcard $(SRCDIR)/include/thirdparty/*$(EXT))
 endif
+# minizip 3
+CXFLAGS += -DHAVE_WZAES
+CXFLAGS += -DHAVE_ZLIB
+SRC += $(wildcard $(SRCDIR)/include/thirdparty/minizip3/*$(EXT))
+
 OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
 RESBIN = $(wildcard res/*.*)
 RES = $(RESBIN:$(RESDIR)/%=$(OBJDIR)/%.o)
@@ -89,6 +96,10 @@ release: clean_nores $(APPNAME)
 # Builds the app
 $(APPNAME): $(RES) $(OBJ) $(WINRES) 
 	$(CC) $(CXFLAGS) -o $(APPNAME) $^ $(LDFLAGS)
+ifeq ($(MAKECMDGOALS),release)
+#       pack the executable
+		@upx --no-progress $(APPNAME).exe>/dev/null
+endif
 
 # Building rule for .o files and its .c/.cpp in combination with all .h
 $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
@@ -105,8 +116,11 @@ $(OBJDIR)/%.res: $(RESDIR)/win/%.rc
 # Cleans complete project
 .PHONY: clean
 clean:
-	$(RM) $(OBJDIR)/* $(APPNAME) $(RES) $(WINRES)
+	$(RM) $(APPNAME) $(RES) $(WINRES)
+	find $(OBJDIR)/ -name "*.o" -type f -delete
 
 .PHONY: clean_nores
 clean_nores:
-	$(RM) $(OBJ) $(APPNAME)
+	$(RM) $(APPNAME) $(OBJDIR)/main.o
+#	$(RM) $(OBJ) $(APPNAME)
+

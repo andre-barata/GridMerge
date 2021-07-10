@@ -37,6 +37,14 @@
         "stb_truetype.h": "c",
         "font_stb.h": "c",
         "stb_rect_pack.h": "c",
-        "concepts": "c"
+        "concepts": "c",
+        "unzip.h": "c",
+        "mz.h": "c",
+        "mz_os.h": "c",
+        "mz_strm.h": "c",
+        "mz_strm_buf.h": "c",
+        "mz_zip.h": "c",
+        "mz_zip_rw.h": "c",
+        "mz_strm_split.h": "c"
     }
 }

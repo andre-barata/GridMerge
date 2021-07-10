@@ -102,17 +102,16 @@ ViewModel layout = {
             .stack = dirHorizontal,
             .initialChildCount = 3, .initialChilds = (ViewModel[]){
                 {
+                    .id = "lGrid",
                     .w = 45,"%",
-                    .bgColor = &gray1,
-                    .innerText = "The quick brown fox jumps over the lazy dog. À 1ª caça com cão.",
-                    .vAlign = valignTop,
-                    .fontSize = 16
+                    .bgColor = &gray1
                 },
                 {
                     .w = 10,"%",
                     .bgColor = &gray2
                 },
                 {
+                    .id = "rGrid",
                     .w = 45,"%",
                     .bgColor = &gray1
                 }
@@ -127,6 +126,10 @@ ViewModel layout = {
 
 #define isUnitPx(x) (x[0] == 'p' && x[1] == 'x' && x[2] == 0)
 #define isUnitPcnt(x) (x[0] == '%' && x[1] == 0)
+
+// TODO: allow for multiple global models and modelSets
+typedef struct { char* key; ViewModel* value; } modelSetItem;
+modelSetItem* modelSet = NULL;
 
 bool createModel(ViewModel* parentNode) {
     // set the size of the dinamic array for the model's child nodes based on the layout's node childs
@@ -193,6 +196,7 @@ bool loadModelAttributes(ViewModel* parentNode, int x, int y, int parentWidth, i
         node->x = x; node->y = y; node->x2 = x + w; node->y2 = y + h; node->absH = h; node->absW = w;
 
         if (node->dragsWindow) dragRect = (SDL_Rect){x, y, w, h};
+        if (node->id != NULL) shput(modelSet, node->id, node);
 
         //recursivelly navigate to child nodes
         if (!loadModelAttributes(node, x, y, w, h)) return false;
@@ -220,6 +224,10 @@ bool computeModel(ViewModel* model, int x, int y, int parentWidth, int parentHei
     if (!calcModelSums(model)) return false;
     if (!loadModelAttributes(model, x, y, parentWidth, parentHeight)) return false;
     return true;
+}
+
+ViewModel* getModelById(char* id) {
+    ViewModel* pModel = shget(modelSet, id);
 }
 
 #endif
