@@ -24,7 +24,7 @@ APPNAME = GridMerge
 USE_FREETYPE = n
 INCLUDES = -I/mingw64/include/SDL2 `pkg-config freetype2 --cflags`
 LIBS = -LD:/Dev/msys64/mingw64/lib `sdl2-config --cflags --static-libs` -lz \
-	-Wl,--whole-archive -lwinpthread -Wl,--no-whole-archive
+	-Wl,--whole-archive ./lib/libwinpthread.a -Wl,--no-whole-archive
 #-lexpat -lz -lzip 
 FREETYPE_LIBS = -lz -lbz2 -lpng16 -lz -lharfbuzz -lm -lusp10 -lgdi32 -lrpcrt4 -ldwrite \
 	-lglib-2.0 -lintl -lws2_32 -lole32 -lwinmm -lshlwapi -pthread -lm -lpcre -lbrotlidec-static \
@@ -47,7 +47,7 @@ endif
 
 # static and console flags
 ifeq ($(static),y)
-	CX_START = -O2 -flto
+	CX_START = -O2
 	CX_END = 
 	LD_START = -Wl,--gc-sections -Wl,-Bstatic 
 	LD_END = -Wl,-Bdynamic 

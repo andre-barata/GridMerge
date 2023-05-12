@@ -45,6 +45,8 @@
         "mz_strm_buf.h": "c",
         "mz_zip.h": "c",
         "mz_zip_rw.h": "c",
-        "mz_strm_split.h": "c"
+        "mz_strm_split.h": "c",
+        "res.h": "c",
+        "sdl_thread.h": "c"
     }
 }

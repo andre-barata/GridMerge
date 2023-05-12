@@ -128,6 +128,7 @@ bool loadSharedStringsFile(Spreadsheet* sheet, void* reader, unsigned char* zipF
     return true;
 }
 
+// cell example: <c r="B2" t="s"><v>2</v></c>
 bool loadWorksheet(Spreadsheet* sheet, unsigned char* fileBuffer, unsigned int bufferSize) {
     // TODO: load cell data
     stopwatchStart();
