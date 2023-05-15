@@ -22,7 +22,6 @@
 
 #include <string.h>
 #include <stdbool.h>
-//#include <utf8proc.h>
 #include <SDL.h>
 #include "include/res.h"
 #include "include/common.h"
@@ -61,7 +60,7 @@ int main(int argc, char *argv[]) {
     stopwatchStop("text render");
     SDL_RenderPresent(windowRenderer);
 */
-    loadGrid("d:\\dev\\excel\\allocation1.xlsx");
+    loadGrid("c:\\docs\\excel\\allocation1.xlsx");
     ViewModel* gridHolder = getModelById("lGrid");
     renderGrid(windowRenderer, gridHolder->x, gridHolder->y, gridHolder->w, gridHolder->h);
 

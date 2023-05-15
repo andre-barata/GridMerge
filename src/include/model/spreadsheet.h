@@ -144,7 +144,7 @@ bool loadWorksheet(Spreadsheet* sheet, unsigned char* fileBuffer, unsigned int b
         // save pointer position
         pFirstMatch = pChar;
         // move pointer to the end tag
-        while (*pChar++ != '<' || *pChar++ != '/' || *pChar++ != 't' || *pChar++ != '>');
+        while (*pChar++ != '<' || *pChar++ != '/' || *pChar++ != 'c' || *pChar++ != '>');
         //  copy the string to sharedStrings array
         int len = pChar - pFirstMatch - 4;
         iString++;
